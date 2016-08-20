@@ -1,0 +1,17 @@
+# An unambiguous crossword which requires searching.
+
+shape = rectangular
+
+num_rows = 2
+num_cols = 2
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'AB|BA'
+'AB|BA'
+
+# columns
+'AA|BB'
+'AB|BA|AA'

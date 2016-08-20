@@ -1,0 +1,17 @@
+# https://regexcrossword.com/challenges/beginner/puzzles/3
+
+shape = rectangular
+
+num_rows = 2
+num_cols = 2
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'(.)+\1'
+'[^ABRC]+'
+
+# columns
+'[COBRA]+'
+'(AB|O|OR)+'

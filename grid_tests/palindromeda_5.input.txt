@@ -1,0 +1,21 @@
+# https://regexcrossword.com/challenges/palindromeda/puzzles/5
+
+shape = rectangular
+
+num_rows = 4
+num_cols = 4
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'(EP|ST)*'
+'T[A-Z]*'
+'.M.T'
+'.*P.[S-X]+'
+
+# columns
+'.*E.*'
+'[^P]I(IT|ME)'
+'(EM|FE)(IT|IP)'
+'(TS|PE|KE)*'

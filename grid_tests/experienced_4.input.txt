@@ -1,0 +1,23 @@
+# https://regexcrossword.com/challenges/experienced/puzzles/4
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[#?]!*[:?;]'
+'(.)([;?])\1\2\1'
+'["!"]*\?!*#?'
+'.[;?][>!?]*'
+'(.)[;!"]*!\1'
+
+# columns
+'(!!|\?!|;\?)*\?'
+'[<!?*#>]*'
+'[?*!].\?[!<*]*'
+'(.)[?#]\1\?\1'
+'[<?>][\[!]*[?\|#]'

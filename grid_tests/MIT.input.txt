@@ -1,0 +1,52 @@
+# http://web.mit.edu/puzzle/www/2013/coinheist.com/rubik/a_regular_crossword/grid.pdf
+
+shape = hexagonal
+
+num_regexes_per_line = 1
+
+# the regexes are listed counterclockwise
+
+# horizontal
+'.*H.*H.*'
+'(DI|NS|TH|OM)*'
+'F.*[AO].*[AO].*'
+'(O|RHH|MM)*'
+'.*'
+'C*MC(CCC|MM)*'
+'[^C]*[^R]*III.*'
+'(...?)\1*'
+'([^X]|XCC)*'
+'(RR|HHH)*.?'
+'N.*X.X.X.*E'
+'R*D*M*'
+'.(C|HH)*'
+
+# south-east -> north-west
+'.*G.*V.*H.*'
+'[CR]*'
+'.*XEXM*'
+'.*DD.*CCM.*'
+'.*XHCR.*X.*'
+'.*(.)(.)(.)(.)\4\3\2\1.*'
+'.*(IN|SE|HI)'
+'[^C]*MMM[^C]*'
+'.*(.)C\1X\1.*'
+'[CEIMU]*OH[AEMOR]*'
+'(RX|[^R])*'
+'[^M]*M[^M]*'
+'(S|MM|HHH)*'
+
+# north-east -> south-west
+'.*SE.*UE.*'
+'.*LR.*RL.*'
+'.*OXR.*'
+'([^EMC]|EM)*'
+'(HHX|[^HX])*'
+'.*PRR.*DDC.*'
+'.*'
+'[AM]*CM(RC)*R?'
+'([^MC]|MM|CC)*'
+'(E|CR|MN)*'
+'P+(..)\1.*'
+'[CHMNOR]*I[CHMNOR]*'
+'(ND|ET|IN)[^X]*'

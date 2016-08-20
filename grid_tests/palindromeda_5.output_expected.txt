@@ -1,0 +1,11 @@
+found 1 solution(s) (there are no other solutions):
+
+ -- -- -- -- 
+|S |T |E |P |
+ -- -- -- -- 
+|T |I |M |E |
+ -- -- -- -- 
+|E |M |I |T |
+ -- -- -- -- 
+|P |E |T |S |
+ -- -- -- -- 

@@ -1,0 +1,16 @@
+# https://regexcrossword.com/challenges/tutorial/puzzles/7
+
+shape = rectangular
+
+num_rows = 2
+num_cols = 1
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'A|B'
+'A|B'
+
+# columns
+'(A)\1'

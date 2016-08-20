@@ -1,0 +1,21 @@
+# https://regexcrossword.com/challenges/doublecross/puzzles/1
+
+shape = rectangular
+
+num_rows = 1
+num_cols = 2
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[A-GN-Z]+'
+'[^A-DI-S]+'
+
+# column 1
+'[D-HJ-M]'
+'[^F-KM-Z]'
+
+# column 2
+'[^A-RU-Z]'
+'[A-KS-V]'

@@ -1,0 +1,23 @@
+# https://regexcrossword.com/challenges/experienced/puzzles/2
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[UGLER]*'
+'[CAST]*REX[PEA]*'
+'[SIRES]*'
+'(L|OFT|ON)*'
+'H*(AY|ED)*'
+
+# columns
+'[ARK]*O.*'
+'(.).*\1N\1'
+'(SOD|DO|GE)*'
+'[FAXUS]*'
+'[LOPITY]*'

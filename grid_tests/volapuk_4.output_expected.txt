@@ -1,0 +1,11 @@
+found 1 solution(s) (there are no other solutions):
+
+ -- -- -- -- 
+|7 |0 |M |W |
+ -- -- -- -- 
+|/ |D |B |E |
+ -- -- -- -- 
+|1 |  |S |P |
+ -- -- -- -- 
+|: |X |N |A |
+ -- -- -- -- 

@@ -1,0 +1,53 @@
+# https://regexcrossword.com/challenges/hamlet/puzzles/3
+
+shape = rectangular
+
+num_rows = 4
+num_cols = 7
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[HEL\s]+P.+'
+'.[SEPOLI\s]+'
+
+# row 2
+'[MI/SON]+[^OLDE]{4}'
+'.{3,4}(\sH|\s|IM)+'
+
+# row 3
+'[IN'THE\.\s]+'
+'[IT'\s]{4}[H.TE]+'
+
+# row 4
+'.[A-G]+(R|D)+[END]+'
+'.{4}(NI|TE|N|DE)+'
+
+# column 1
+'[O-S\sG-L]+'
+'(\s\s|OR|HO|ME)+'
+
+# column 2
+'[ANTIGE]+'
+'[A-G]N+(GI|IG|PI)'
+
+# column 3
+'(S\s|\sS|'A)+'
+'[RAM\sES']+'
+
+# column 4
+'[PI\sRD]+'
+'[^AINED]+'
+
+# column 5
+'(TD|L|LO|O|OH)+'
+'[HORTED]+'
+
+# column 6
+'[HITE'\s]+'
+'[F-K]{2}[F-M]..?'
+
+# column 7
+'[MENDS]+'
+'(S|I|MS)[MYEND]*'

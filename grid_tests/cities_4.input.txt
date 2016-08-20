@@ -1,0 +1,37 @@
+# https://regexcrossword.com/challenges/cities/puzzles/4
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 4
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[ALK\sU]+(P|AL|E)+'
+'[LUKE]{2}[LAKE\s]+'
+
+# row 2
+'[ABC]\s(LU|LP)]*'
+'.*[PUL]+'
+
+# row 3
+'(RU|MP|UR|S)+'
+'[RUMPUS]*'
+
+# column 1
+'(KA|LK)[MNO]'
+'[KRAMP]+'
+
+# column 2
+'.+(AL|P)'
+'U[PLAIN\s]{2}'
+
+# column 3
+'[^PIM\s]+'
+'[ALURE]+'
+
+# column 4
+'[LP].*[PR]'
+'[RULE\s]+'

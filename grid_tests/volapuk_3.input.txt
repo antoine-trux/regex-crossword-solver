@@ -1,0 +1,37 @@
+# https://regexcrossword.com/challenges/volapuk/puzzles/3
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 4
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[^APE]+.?'
+'[M-Q].[A-E][M-Q]'
+
+# row 2
+'[SNAKE]+..'
+'[^NAKED].?(UO|DUO)'
+
+# row 3
+'(\!|\'|\.|\?)?P[YO!]+'
+'.+[M-W]+'
+
+# column 1
+'[MENSA?]+'
+'[^NAP\s]+.'
+
+# column 2
+'(A|\?|\?P|NP)+'
+'[PEN\sA?]+'
+
+# column 3
+'[YOU?BE]+'
+'.+(Y|BE)'
+
+# column 4
+'(O|P)\1\1'
+'[^BAT'S?]+'

@@ -1,0 +1,174 @@
+@ECHO OFF
+
+rem #################################################
+rem ### Rename this file to 'run_grid_tests.cmd'. ###
+rem #################################################
+rem
+rem In the delivery zip file, this script has extension
+rem 'rename_extension_to_cmd', because of potential security
+rem restrictions involved when a file with a 'cmd' extension is
+rem within a zip file.
+
+rem This script runs the grid tests, located in directory
+rem '..\grid_tests' relative to the directory of this script.
+rem
+rem For each test 'xxx':
+rem
+rem 1. the solver runs the test with input file
+rem    '..\grid_tests\xxx.input.txt', and stores its output to
+rem    '..\grid_tests\xxx.output.txt'
+rem
+rem 2. if '..\grid_tests\xxx.output_expected.txt' and
+rem    '..\grid_tests\xxx.output.txt' are identical, test 'xxx'
+rem    passes, and '..\grid_tests\xxx.output.txt' is deleted
+rem
+rem 3. if '..\grid_tests\xxx.output_expected.txt' and
+rem    '..\grid_tests\xxx.output.txt' are not identical, test 'xxx'
+rem    fails, and '..\grid_tests\xxx.output.txt' is not deleted (so
+rem    it can be inspected)
+rem
+rem Usage:
+rem
+rem     run_grid_tests.cmd [<build>]
+rem
+rem with <build> one of: 'release' (default), 'debug'
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+SETLOCAL ENABLEEXTENSIONS
+
+
+rem Set various variables.
+
+SET EXIT_SUCCESS=0
+SET EXIT_FAILURE=1
+SET EXIT_USAGE=2
+
+SET SCRIPT_PATH=%0
+SET SCRIPT_DIR=%~dp0
+SET GRID_TESTS_DIR=%SCRIPT_DIR%\..\grid_tests
+
+SET exit_status=%EXIT_SUCCESS%
+
+
+rem Parse the command line.
+
+rem Count the command line arguments.
+SET num_args=0
+FOR %%x IN (%*) DO SET /A num_args+=1
+
+IF %num_args% GTR 1 (
+    CALL :print_error_message too many arguments
+    CALL :print_usage
+    SET exit_status=%EXIT_USAGE%
+    GOTO :end
+)
+
+IF %num_args% EQU 0 (
+    rem Default.
+    SET build=release
+) ELSE (
+    SET build=%1
+)
+
+IF %build% NEQ debug IF %build% NEQ release (
+    CALL :print_error_message invalid 'build' argument: %build%
+    CALL :print_usage
+    SET exit_status=%EXIT_USAGE%
+    GOTO :end
+)
+
+SET PROGRAM=%SCRIPT_DIR%\regex_crossword_solver\%build%
+SET PROGRAM=%PROGRAM%\regex_crossword_solver.exe
+
+
+rem Check that the tests can be executed.
+
+IF NOT EXIST %PROGRAM% (
+    CALL :print_error_message program does not exist: %PROGRAM%
+    SET exit_status=%EXIT_FAILURE%
+    GOTO :end
+)
+
+IF NOT EXIST %GRID_TESTS_DIR% (
+    CALL :print_error_message directory does not exist: %GRID_TESTS_DIR%
+    SET exit_status=%EXIT_FAILURE%
+    GOTO :end
+)
+
+
+rem Execute the tests.
+
+FOR %%F IN (%GRID_TESTS_DIR%\*.input.txt) DO (
+    CALL :test_grid %%F
+    IF !ERRORLEVEL! NEQ 0 (
+        SET exit_status=%EXIT_FAILURE%
+    )
+)
+
+IF %exit_status% EQU 0 (
+    ECHO.
+    ECHO all tests passed
+) ELSE (
+    ECHO.                  1>&2
+    ECHO ERRORS WERE FOUND 1>&2
+)
+
+GOTO :end
+
+
+rem Print a decorated version of the argument message to stderr.
+:print_error_message
+ECHO.
+ECHO ### ERROR %* ### 1>&2
+ECHO.
+EXIT /B %EXIT_SUCCESS%
+
+
+:print_usage
+ECHO.
+ECHO Usage:
+ECHO.
+ECHO %SCRIPT_PATH% [^<build^>]
+ECHO.
+ECHO with ^<build^> one of: 'release' (default), 'debug'
+EXIT /B %EXIT_SUCCESS%
+
+
+rem Test the grid whose input file is the only argument to this
+rem function.
+:test_grid
+SET input_filepath=%1
+SET output_expected_filepath=%input_filepath:input=output_expected%
+SET output_filepath=%input_filepath:input=output%
+SET input_filename=%~nx1
+SET test_name=%input_filename:.input.txt=%
+rem print message without terminating newline
+<NUL SET /P =testing %test_name%...
+%PROGRAM% %input_filepath% > %output_filepath% 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    ECHO FAILED - the program failed
+    EXIT /B %EXIT_FAILURE%
+)
+fc.exe %output_expected_filepath% %output_filepath% > NUL 2>&1
+IF %ERRORLEVEL% EQU 0 (
+    ECHO passed
+    DEL %output_filepath%
+    EXIT /B %EXIT_SUCCESS%
+)
+IF %ERRORLEVEL% EQU 1 (
+    ECHO FAILED - the output did not match the expected output
+    EXIT /B %EXIT_FAILURE%
+)
+IF %ERRORLEVEL% EQU 2 (
+    ECHO FAILED - the expected output file cannot be found
+    DEL %output_filepath%
+    EXIT /B %EXIT_FAILURE%
+)
+ECHO FAILED - unexpected fc.exe error
+EXIT /B %EXIT_FAILURE%
+
+
+:end
+ENDLOCAL
+ECHO ON
+@EXIT /B %exit_status%

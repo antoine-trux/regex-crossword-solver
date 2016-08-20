@@ -1,0 +1,49 @@
+# https://regexcrossword.com/challenges/volapuk/puzzles/5
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'(N3|TRA|N7)+'
+'[^OLD\s]+'
+
+# row 2
+'[1LOVE2?4]+.'
+'(\d+)[LA\s$?]+'
+
+# row 3
+'(A|D)M[5-8$L]+'
+'(\-P|5\$|AM|Z|L)+'
+
+# row 4
+'[^\s0ILAD]+'
+'(\-D|\-WE)+[^L4-9N$?]+'
+
+# row 5
+'[B-E]+(.)\1.'
+'[FED$?]+'
+
+# column 1
+'[2TAIL\-D]+'
+'[^ILYO]+'
+
+# column 2
+'(WE|R4|RY|M)+'
+'.+[MURDEW]+'
+
+# column 3
+'[FEAL3-5S]+'
+'[1ALF5$E\s]+'
+
+# column 4
+'[^FA\sT1-2]+F'
+'[\dFAN$?]+'
+
+# column 5
+'[LO\s\?5-8]+'
+'.+\s.+\?'

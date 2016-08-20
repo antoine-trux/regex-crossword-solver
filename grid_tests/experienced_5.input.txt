@@ -1,0 +1,23 @@
+# https://regexcrossword.com/challenges/experienced/puzzles/5
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[IT](O)*(BE|AD)*\1'
+'[NORMAL]+T{2}'
+'.*(XA|BE).*'
+'(EG|UL){2}[ALF]*'
+'[REQ]*(G|P)(.)+'
+
+# columns
+'[RUTH]*(OE|EO)[RB]*'
+'(BG|ON|KK)+[RIF]+'
+'(MN|BO|FI)[EU]{2,}'
+'(KT|AL|ET)+G'
+'[OH](PR|AX|TR)+'

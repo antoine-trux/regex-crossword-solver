@@ -1,0 +1,25 @@
+# https://regexcrossword.com/challenges/cities/puzzles/1
+
+shape = rectangular
+
+num_rows = 2
+num_cols = 2
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[LINE]+'
+'[ISLE]+'
+
+# row 2
+'[LAM]+'
+'[MALE]+'
+
+# column 1
+'(MA|LM)'
+'[LAME]*'
+
+# column 2
+'[^MESH]+'
+'[^LES]+'

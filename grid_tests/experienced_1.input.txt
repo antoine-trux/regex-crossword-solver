@@ -1,0 +1,21 @@
+# https://regexcrossword.com/challenges/experienced/puzzles/1
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'(Y|F)(.)\2[DAF]\1'
+'(U|O|I)*T[FRO]+'
+'[KANE]*[GIN]*'
+
+# columns
+'(FI|A)+'
+'(YE|OT)K'
+'(.)[IF]+'
+'[NODE]+'
+'(FY|F|RG)+'

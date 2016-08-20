@@ -1,0 +1,33 @@
+# https://regexcrossword.com/challenges/cities/puzzles/3
+
+shape = rectangular
+
+num_rows = 2
+num_cols = 4
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'(W\s|NE|PS)*'
+'[END\sWITH]+'
+
+# row 2
+'[YOU]{2}[ARK]+'
+'.+R.*'
+
+# column 1
+'[NAYE]*'
+'[YEN]+'
+
+# column 2
+'(EO|N\s)'
+'[ETPHONE\s]+'
+
+# column 3
+'[WRONG]*'
+'[^GONE\s]+'
+
+# column 4
+'(K|R|I|M|\s)+'
+'[\sANKT]+'

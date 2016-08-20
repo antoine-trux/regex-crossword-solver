@@ -1,0 +1,28 @@
+# https://regexcrossword.com/challenges/hexagonal/puzzles/3
+
+shape = hexagonal
+
+num_regexes_per_line = 1
+
+# the regexes are listed counterclockwise
+
+# horizontal
+'\.?.[^QUOT3\s]{2}\.?'
+'\.?["EXPLAINED"]+\.?'
+'\.?(BA|\.B|Y")+(\1)(\s)\.?'
+'\.?(D\W|EF|IN|I.|TI.N)*\.?'
+'\.?[ORIG\.N\s]+\.?'
+
+# south-east -> north-west
+'\.?(PAS|RI|TE)+\.?'
+'\.?(LIN|GO|\s)+[URBAN]+\.?'
+'\.?(BOM|"S|ND\.)+\.?'
+'\.?["BABIES"]{4}\.?'
+'\.?[^NOBEAT\?]*\.?'
+
+# north-east -> south-west
+'\.?(\s|W|EE|T)+\W+(\w)+\.?'
+'\.?(I|D|IO|M)+\w?(\1)+\.?'
+'\.?(SE|\.\s|MET|APHO|R)+\.?'
+'\.?(BI|T|E"|\s)+\.?'
+'\.?[S-TALK]{2,3}\.?'

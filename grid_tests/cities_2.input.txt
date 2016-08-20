@@ -1,0 +1,33 @@
+# https://regexcrossword.com/challenges/cities/puzzles/2
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 3
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'.*[KNIGHT]'
+'[^GIP]+[^MITE]'
+
+# row 2
+'(IN|SI|D|E)+'
+'[DIMN]+[NO]'
+
+# row 3
+'[IMUST]+'
+'[^SNAP\s\-]+'
+
+# column 1
+'[IDEAL\s]+'
+'(DI|FI|L|O)+'
+
+# column 2
+'[OLD]I[PUS]'
+'[IOU\s]+'
+
+# column 3
+'[MNOPQR]+'
+'(.)\1(M|N)'

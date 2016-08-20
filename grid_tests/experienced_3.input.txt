@@ -1,0 +1,23 @@
+# https://regexcrossword.com/challenges/experienced/puzzles/3
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[QA].[WEST]*'
+'(HE|RT|TK)*.'
+'(RE|QR)[QUART]*'
+'[EUW]*S[RITE]*'
+'(.)(.)\2\1[WE]'
+
+# columns
+'[ABC]*(.)\1(ME|UO)'
+'(.)T*E*\1'
+'[HAS]*(SN|PA)'
+'(WE|GA|AL)T*O+'
+'(EG|BEEE)[WIQ]*'

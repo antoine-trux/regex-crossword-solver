@@ -1,0 +1,23 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'(11|00)+1'
+'1{2,}0{2,}'
+'0?1?0?1?0?1?'
+'0?1+0?'
+'0+1+'
+
+# columns
+'(11|0)+'
+'[01]+'
+'(10101|01010)'
+'0+1+0+'
+'(0|1)(0|1)\2\1\1'

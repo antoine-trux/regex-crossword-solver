@@ -1,0 +1,32 @@
+# https://regexcrossword.com/challenges/hexagonal/puzzles/4
+
+shape = hexagonal
+
+num_regexes_per_line = 1
+
+# horizontal
+'[SKY][DANCER\s]+'
+'[ACT|V1TI3S]+\w'
+'[^SVAI\s=]+["OLD"]{2}'
+'((B\WS)|ZZ|(\s))*\W(\s)+'
+'(SO|L|I|DAR|E|T|Y)+'
+'[^EARS](H|I|T)(\1)[TEAM]+'
+'[^IT="SLY?3]+'
+
+# south-east -> north-west
+'[FEV3R]+[BGE3SY]+'
+'(O\W|MAX)?[STAR]+(\W)+'
+'(\W)(FL|O|A|T|S|\W)+'
+'[=SAYAL1VE]+'
+'(NO|N)*[MOTIV3=\s]+'
+'[A\s|AN|"ET3RTY"]+'
+'[MELLO\W]{2}[YELLO\W]{2}'
+
+# north-east -> south-west
+'\W[IAMFLYING]*'
+'[BLU3][\sKIES]*'
+'[CLU3][TRIE\W]+'
+'(\W)(F|I|T)+(\=O|F|I|(\2))*'
+'((E)|(V)|(ER)|(S))+[EVER]'
+'(\W)(SO|AR|E)(\1)(R|Y)+'
+'(SA|Y|AS)["BUMBLE"]+'

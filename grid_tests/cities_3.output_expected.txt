@@ -1,0 +1,7 @@
+found 1 solution(s) (there are no other solutions):
+
+ -- -- -- -- 
+|N |E |W |  |
+ -- -- -- -- 
+|Y |O |R |K |
+ -- -- -- -- 

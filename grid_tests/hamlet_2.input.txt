@@ -1,0 +1,26 @@
+# https://regexcrossword.com/challenges/hamlet/puzzles/2
+
+shape = rectangular
+
+num_rows = 6
+num_cols = 7
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[SALT]+O(\sB|S,|E,)+[F\s]'
+'(OR\s|T\s|NO)*'
+'.(L|,|O)[,E\sB]+'
+'(TH|IH|T)AT[SI\s]*'
+'(\s|I)?(T|H|F){2}E[QU\s]{3}'
+'[^BAKH\s]+(\sB|N\s)'
+
+# columns
+'(T|K)[POE]\1\1(B|E|\s)*'
+'[PROH]+TS+'
+'(BY|\s|K){3}(AH|T|HA)+'
+'(TEI|PNI|BNB)*'
+'(\sO|EO|E\s)+'
+'[I,T]{4}(QN|BA)*'
+'(.)\1\1[SUN]*\1'

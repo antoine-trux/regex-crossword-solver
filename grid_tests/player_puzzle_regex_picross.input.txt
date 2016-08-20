@@ -1,0 +1,43 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 15
+num_cols = 15
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'O*\s{1}O*'
+'O*\s{3}O*'
+'O*\s{1}O*\s{3}O*\s{1}O*'
+'O*\s{5}O*'
+'O*\s{5}O*'
+'O*\s{6}O*\s{1}O*\s{6}O*'
+'O*\s{5}O*\s{1}O*\s{5}O*'
+'O*\s{4}O*\s{1}O*\s{4}O*'
+'O*\s{9}O*'
+'O*\s{1}O*\s{3}D\s{3}O*\s{1}O*'
+'O*\s{3}O\s{1}J\s{3}O*'
+'O*\s{2}O\s{3}O\s{2}O*'
+'O*\s{2}G\s{2}O*\s{2}B\s{2}O*'
+'O*\s{4}O*\s{4}O*'
+'O*\s{3}O*\s{3}O*'
+
+# columns
+'O*\s{1}O*'
+'O*\s{2}O*\s{1}O*\s{1}O*'
+'O*\s{1}O*\s{3}O*\s{3}O*'
+'O*\s{4}O*\s{5}O*'
+'O*\s{7}G\s{1}O*'
+'O*\s{8}O\s{2}O*'
+'O*\s{4}O*\s{2}O\s{2}O*'
+'O*\s{9}D\s{2}O*'
+'O*\s{4}O*\s{2}J\s{2}O*'
+'O*\s{8}O\s{2}O*'
+'O*\s{7}B\s{1}O*'
+'O*\s{4}O*\s{5}O*'
+'O*\s{1}O*\s{3}O*\s{3}O*'
+'O*\s{2}O*\s{1}O*\s{1}O*'
+'O*\s{1}O*'

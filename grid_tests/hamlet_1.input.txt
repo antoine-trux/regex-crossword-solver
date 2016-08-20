@@ -1,0 +1,26 @@
+# https://regexcrossword.com/challenges/hamlet/puzzles/1
+
+shape = rectangular
+
+num_rows = 6
+num_cols = 7
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[RA](A|E)[V\s]\1[NG]+\1'
+'[SHI\s]+.{2}'
+'(FO|UL|ED)*[DAN\s]+'
+'[TORM]+ST(U|\s|N|K)*'
+'(F|N)(.)[RUNT]+\2[CL]*'
+'\s[URM]*[ERD]{3,}'
+
+# columns
+'[RQ\s]*(N|U|M|\s){3,}'
+'(N|I|E)[HOLE]{2,}A(M|N)'
+'[VIT]{2}[T\s]?(STU|PLO)+'
+'(E|\s)(A|S|K)*.U?[FR]'
+'(F|A|N)(\s)\1\2[RIF](K|D)+'
+'(G|A|\s)(DU|F|SET)+[WAE]+'
+'[ASK]?(LR|EO|\sN)+'

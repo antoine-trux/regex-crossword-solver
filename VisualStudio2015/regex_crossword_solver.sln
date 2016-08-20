@@ -1,0 +1,33 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "regex_crossword_solver", "regex_crossword_solver\regex_crossword_solver.vcxproj", "{3F921F59-2421-3D7D-8DF3-7D74F77E31DF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "regex_crossword_solver_fuzz_tests", "regex_crossword_solver_fuzz_tests\regex_crossword_solver_fuzz_tests.vcxproj", "{377CF49E-CA22-3DFF-A791-1515971CFFD8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "regex_crossword_solver_unit_tests", "regex_crossword_solver_unit_tests\regex_crossword_solver_unit_tests.vcxproj", "{0541A6FD-C109-3E03-AE17-F5DEAAD02ADE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F921F59-2421-3D7D-8DF3-7D74F77E31DF}.Debug|x64.ActiveCfg = Debug|x64
+		{3F921F59-2421-3D7D-8DF3-7D74F77E31DF}.Debug|x64.Build.0 = Debug|x64
+		{3F921F59-2421-3D7D-8DF3-7D74F77E31DF}.Release|x64.ActiveCfg = Release|x64
+		{3F921F59-2421-3D7D-8DF3-7D74F77E31DF}.Release|x64.Build.0 = Release|x64
+		{377CF49E-CA22-3DFF-A791-1515971CFFD8}.Debug|x64.ActiveCfg = Debug|x64
+		{377CF49E-CA22-3DFF-A791-1515971CFFD8}.Debug|x64.Build.0 = Debug|x64
+		{377CF49E-CA22-3DFF-A791-1515971CFFD8}.Release|x64.ActiveCfg = Release|x64
+		{377CF49E-CA22-3DFF-A791-1515971CFFD8}.Release|x64.Build.0 = Release|x64
+		{0541A6FD-C109-3E03-AE17-F5DEAAD02ADE}.Debug|x64.ActiveCfg = Debug|x64
+		{0541A6FD-C109-3E03-AE17-F5DEAAD02ADE}.Debug|x64.Build.0 = Debug|x64
+		{0541A6FD-C109-3E03-AE17-F5DEAAD02ADE}.Release|x64.ActiveCfg = Release|x64
+		{0541A6FD-C109-3E03-AE17-F5DEAAD02ADE}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

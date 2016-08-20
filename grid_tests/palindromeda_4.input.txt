@@ -1,0 +1,21 @@
+# https://regexcrossword.com/challenges/palindromeda/puzzles/4
+
+shape = rectangular
+
+num_rows = 4
+num_cols = 4
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[PARTY]*[POD]'
+'(JA|OK|RA){2}'
+'(.)*J\1[RQ]'
+'[CAP]*(T|R|Y)*'
+
+# columns
+'(AP|TR|OR)*'
+'R[AJEQ]*'
+'[A-O]{2}(AR|AJ)*'
+'[RAMP]*(T|O)+'

@@ -1,0 +1,49 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'(IS|I|T|H\s)+'
+'[WET][^WATER]+'
+
+# row 2
+'(\s|[THIS])+[LONELY]'
+'[ISLE\S]+[ISLE\s]*'
+
+# row 3
+'(\s)?E(.)\2(\s){1,2}'
+'[\sTEP]+'
+
+# row 4
+'(.)(\1)(\2)(\3)(\4)'
+'(WTF|I|\s|THAT)+'
+
+# row 5
+'(.)(ERA|REA|ARE)\1'
+'[\sTRANGE]+?'
+
+# column 1
+'[^A-S][^A-HM-T](.)\1\1'
+'[THI\s]+'
+
+# column 2
+'T?H?I?(\s.){2}'
+'[\w\s]+'
+
+# column 3
+'.[START]{2,3}.+'
+'(.)([START]|\1)+'
+
+# column 4
+'[SHIP\s]+[TRAIN\s]+'
+'.(.).\1.'
+
+# column 5
+'[LET'S]+(\s|TA|RT)+'
+'[ASDF][J-L](.)\1{2}'

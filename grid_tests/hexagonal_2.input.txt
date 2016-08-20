@@ -1,0 +1,22 @@
+# https://regexcrossword.com/challenges/hexagonal/puzzles/2
+
+shape = hexagonal
+
+num_regexes_per_line = 1
+
+# the regexes are listed counterclockwise
+
+# horizontal
+'[FIND]?\$?[LAKME]'
+'[^PESCE]?[POS3]*.'
+'[^OPRES!]+[^STICKO]*'
+
+# south-east -> north-west
+'[^XRAY]?[CROWN]*$'
+'^[D-F\?][^CAMPED]+'
+'[KIP?\!]*(BU|L|B){1,2}'
+
+# north-east -> south-west
+'[78NGUA\!E]{2}'
+'(F|^L|Y)?[POWER!]*'
+'[^ZENI$](TA|NG|LE|R)'

@@ -1,0 +1,61 @@
+# https://regexcrossword.com/challenges/hamlet/puzzles/4
+
+shape = rectangular
+
+num_rows = 6
+num_cols = 7
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[M-W\s]+[A-D]'
+'.+[MUNCH']{3}'
+
+# row 2
+'(H|E|Y)(.)(OF|ER)\2[WAS]{2}'
+'[FO\sH]+(OP|WA|HA)'
+
+# row 3
+'[HASTER'\s]+'
+'(R\s|TE|S)+[^RS\s]{2}(S|HH)?'
+
+# row 4
+'(A|T)[YUR\s]\1H[OU\s,!]+'
+'[THO\sE]+U.?'
+
+# row 5
+'(.).(F|O)\2(R|I|P|\s)+\1\2'
+'[PRO\sE]+'
+
+# row 6
+'[M-Q]+[HELL]+.+'
+'(P|H|EL)+[AILS!]+'
+
+# column 1
+'[PHAT\s!]+'
+'(.).\1\1\s.'
+
+# column 2
+'(O\s|E\s)+.+'
+'[PHONE\s!]+(HP|PH)+'
+
+# column 3
+'[ORP]+TO[^PHILA]'
+'(O|A)\1.+[ELA]'
+
+# column 4
+'[^OLDER]{3}H.+'
+'[LOFHER\s]+'
+
+# column 5
+'.[HORN\s]+[^HAS]'
+'[^NUT\s].[HORIS]+'
+
+# column 6
+'[WAU\s]+'
+'[U-W].+(\s|A)+'
+
+# column 7
+'[CASH]+[O,!]+'
+'[A-E]{2}(S,|O,|O!|,!)+'

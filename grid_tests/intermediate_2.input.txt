@@ -1,0 +1,18 @@
+# https://regexcrossword.com/challenges/intermediate/puzzles/2
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 2
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'[AWE]+'
+'[ALP]+K'
+'(PR|ER|EP)'
+
+# columns
+'[BQW](PR|LE)'
+'[RANK]+'

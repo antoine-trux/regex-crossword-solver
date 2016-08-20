@@ -1,0 +1,65 @@
+# https://regexcrossword.com/challenges/hamlet/puzzles/5
+
+shape = rectangular
+
+num_rows = 8
+num_cols = 6
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[^DO.HY:PER!']+'
+'(A|E|I|O).\1[SOFT,]+.'
+
+# row 2
+'[ROPE\s]+[YE\s]+'
+'[PAST]{1}(O|U|T)+[YEAR\s]+'
+
+# row 3
+'[FAST\s,OR]+.*'
+'O[RICE]+(S\?|K!)'
+
+# row 4
+'[^FOUR,SHE]+'
+'[\s.!]+[ASH]'
+
+# row 5
+'[LEAF\s]*[M-R]+'
+'[^PLAY?KIS]+[LOVE]*'
+
+# row 6
+'[^TRASH]+'
+'(\sI|W\s|OF)+'
+
+# row 7
+'[NITRO,FUN]+'
+'(N|O).(I|F)\1\2.'
+
+# row 8
+'(A|E|I)[J\s]+\1(BE|ST)'
+'(S\s|E\s).[EAST]+'
+
+# column 1
+'[POLEA\s]{5}[^ASH]+'
+'[^IR]{2}[OWN\s]+.'
+
+# column 2
+'.(OR|AP|IE).[FA\sT]+'
+'[LORD'.]+(PS|F\s)+'
+
+# column 3
+'[^ELFR]+(E|OI|J)+'
+'[A?OH–FIRE.]+J?'
+
+# column 4
+'[^OH,AI\s:IM!]+'
+'(SR|LF|C.)+[END]+'
+
+# column 5
+'[KLIPS,CLAP\s]+'
+'[^YOAS]+L[\sHIS]+'
+
+# column 6
+'[\sHY:!;]+.+(T|A|PE)\1'
+'[^EAR;][IF:A?YOLK!].+'

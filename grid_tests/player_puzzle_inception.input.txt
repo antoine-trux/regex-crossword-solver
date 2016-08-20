@@ -1,0 +1,31 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 9
+num_cols = 9
+
+num_regexes_per_row = 1
+num_regexes_per_col = 1
+
+# rows
+'\s+([[]]?)\1.'
+'\s+[AEIOUY][^AEIOUY].'
+'\s+[GREAT]!.'
+'\s+([?[?]?])\1.'
+'\s+?\+s?\+s?\s+?'
+'\s+\/+\-+\\+'
+'((\[|\|)[MO]+(\]|\2)\+?)+'
+'((\[|\|)[ -G]+(\]|\2)\+?)+'
+'\s+\\+\-+\/+'
+
+# columns
+'\s+([[]]?)\1.'
+'\s+[GO][GO][GO]?.'
+'\s+[YUMMY]!.'
+'\s+([?[?]?])\1.'
+'\s+?\+s?\+s?\s+?'
+'\s+\/+\|+\\+'
+'((\[|\-)[GLOW]+(\]|\2)\+?)+'
+'((\[|\-)[EMMA]!(\]|\2)\+?)+'
+'\s+\\+\|+\/+'
