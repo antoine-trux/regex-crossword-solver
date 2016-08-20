@@ -41,6 +41,7 @@ class BackreferenceRegex;
 class CharacterBlock;
 class Constraint;
 class GroupRegex;
+class PositiveLookaheadRegex;
 class RegexOptimizations;
 
 
@@ -54,10 +55,13 @@ class RegexOptimizations;
 //         EpsilonAtEndRegex
 //         EpsilonAtWordBoundaryRegex
 //         EpsilonNotAtWordBoundaryRegex
+//         PositiveLookaheadRegex
 //         CharacterBlockRegex
 //         StringRegex
 //         BackreferenceRegex
-//     GroupRegex
+//     AbstractGroupRegex
+//         GroupRegex
+//         NonCapturingGroupRegex
 //     BinaryRegex
 //         ConcatenationRegex
 //         UnionRegex
@@ -110,8 +114,14 @@ protected:
     static std::unique_ptr<Regex> clone(const Regex& regex, Regex* parent);
 
     // accessing
+    static std::vector<const BackreferenceRegex*>
+               backreferences_to(const Regex&       regex,
+                                 const GroupNumber& group_number);
     size_t begin_pos() const;
     static size_t begin_pos(const Regex& regex);
+    static bool constrain_as_positive_lookahead(Regex&      regex,
+                                                Constraint& constraint,
+                                                size_t      begin_pos);
     static bool constrain_once_with_current_value(Regex&      regex,
                                                   Constraint& constraint,
                                                   size_t      offset);
@@ -125,6 +135,7 @@ protected:
     static void get_used_backreference_numbers(
                    const Regex&          regex,
                    BackreferenceNumbers& used_backreference_numbers);
+    static std::vector<const GroupRegex*> groups(const Regex& regex);
     static size_t length_of_current_value(const Regex& regex);
     size_t length_of_current_value() const;
     static Regex* parent(const Regex& regex);
@@ -207,6 +218,10 @@ private:
     virtual std::unique_ptr<Regex> do_clone() const = 0;
 
     // accessing
+    virtual std::vector<const BackreferenceRegex*>
+                backreferences_to(const GroupNumber& group_number) const = 0;
+    bool constrain_as_positive_lookahead(Constraint& constraint,
+                                         size_t      begin_pos);
     bool constrain_once_with_current_value(Constraint& constraint);
     bool constrain_once_with_current_value(Constraint& constraint,
                                            size_t      offset);
@@ -223,8 +238,12 @@ private:
     virtual GroupRegex* do_rightmost_group(const GroupNumber& group_number,
                                            const Regex*       from_child) = 0;
     virtual GroupRegex* do_rightmost_group(const GroupNumber& group_number) = 0;
+    const PositiveLookaheadRegex* enclosing_lookahead() const;
+    virtual std::vector<const GroupRegex*> groups() const = 0;
     static size_t invalid_begin_pos(size_t constraint_size);
     virtual const GroupRegex* yourself_or_enclosing_group() const;
+    virtual const PositiveLookaheadRegex*
+        yourself_or_enclosing_lookahead() const;
 
     // querying
     bool         begin_pos_is_not_set() const;
@@ -241,6 +260,7 @@ private:
     virtual bool do_is_union() const;
     virtual bool do_parents_are_correctly_setup() const = 0;
     bool         has_a_value_which_fits() const;
+    bool         has_ancestor(const Regex* regex) const;
     bool         has_no_value() const;
     bool         has_parent() const;
     bool         is_root() const;
@@ -267,6 +287,7 @@ private:
     void set_parent(Regex* parent);
 
     // error handling
+    void check_lookaheads_are_not_referenced_from_outside() const;
     void check_no_self_references() const;
     virtual void do_check_no_self_references() const = 0;
 
@@ -313,6 +334,8 @@ protected:
 
 private:
     // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
     bool do_constrain_once_with_current_value(
            Constraint& constraint, size_t offset) override;
     bool do_constrain_word_boundaries_with_current_value(
@@ -324,6 +347,7 @@ private:
     GroupRegex* do_rightmost_group(const GroupNumber& group_number,
                                    const Regex*       from_child) override;
     GroupRegex* do_rightmost_group(const GroupNumber& group_number) override;
+    std::vector<const GroupRegex*> groups() const override;
 
     // querying
     bool do_characters_were_constrained_by_backreference() const override;
@@ -498,6 +522,49 @@ private:
 };
 
 
+// An instance of this class represents a positive lookahead regex
+// (noted '(?=...)').
+class PositiveLookaheadRegex final : public NullaryRegex
+{
+public:
+    // instance creation and deletion
+    explicit PositiveLookaheadRegex(std::unique_ptr<Regex> regex);
+
+private:
+    // copying
+    std::unique_ptr<Regex> do_clone() const override;
+
+    // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
+    bool do_constrain_once_with_current_value(
+           Constraint& constraint, size_t offset) override;
+    std::string do_explicit_characters() const override;
+    void do_get_used_backreference_numbers(
+           BackreferenceNumbers& used_backreference_numbers) const override;
+    std::vector<const GroupRegex*> groups() const override;
+    const PositiveLookaheadRegex*
+        yourself_or_enclosing_lookahead() const override;
+
+    // converting
+    std::string do_to_string() const override;
+
+    // modifying
+    Regex* do_optimize_concatenations() override;
+    Regex* do_optimize_groups(
+             const BackreferenceNumbers& used_backreference_numbers) override;
+    Regex* do_optimize_unions() override;
+    void set_constraint_size_of_children(size_t constraint_size) override;
+
+    // error handling
+    void do_check_no_self_references() const override;
+
+    // The regex which this lookahead regex asserts. For example, if
+    // this lookahead regex is '(?=abc)', m_regex is 'abc'.
+    std::unique_ptr<Regex> m_regex;
+};
+
+
 // An instance of this class represents a character block regex. See
 // class CharacterBlock and its subclasses for further details.
 //
@@ -657,6 +724,8 @@ private:
     std::unique_ptr<Regex> do_clone() const override;
 
     // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
     bool do_constrain_once_with_current_value(
            Constraint& constraint, size_t offset) override;
     void do_get_used_backreference_numbers(
@@ -679,25 +748,22 @@ private:
 };
 
 
-// An instance of this class represents a group regex.
-//
-// For example, '(A)B' is the ConcatenationRegex of:
-// * GroupRegex '(A)'
-// * CharacterBlockRegex 'B'
-class GroupRegex final : public Regex
+// An abstract class for the group subclasses.
+class AbstractGroupRegex : public Regex
 {
-public:
+protected:
     // instance creation and deletion
-    GroupRegex(std::unique_ptr<Regex> child, const GroupNumber& group_number);
-
-    // querying
-    bool has_number(const GroupNumber& group_number) const;
-
-private:
-    // copying
-    std::unique_ptr<Regex> do_clone() const override;
+    explicit AbstractGroupRegex(std::unique_ptr<Regex> child);
 
     // accessing
+    Regex& child() const;
+    GroupRegex* do_rightmost_group(const GroupNumber& group_number,
+                                   const Regex*       from_child) override;
+
+private:
+    // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
     bool do_constrain_once_with_current_value(
            Constraint& constraint, size_t offset) override;
     bool do_constrain_word_boundaries_with_current_value(
@@ -706,18 +772,13 @@ private:
     void do_get_used_backreference_numbers(
            BackreferenceNumbers& used_backreference_numbers) const override;
     size_t do_length_of_current_value() const override;
-    GroupRegex* do_rightmost_group(const GroupNumber& group_number,
-                                   const Regex*       from_child) override;
-    GroupRegex* do_rightmost_group(const GroupNumber& group_number) override;
-    const GroupRegex* yourself_or_enclosing_group() const override;
 
     // querying
     bool do_at_end() const override;
     bool do_characters_were_constrained_by_backreference() const override;
     bool do_parents_are_correctly_setup() const override;
-
-    // converting
-    std::string do_to_string() const override;
+    virtual bool number_belongs_to(
+                   const BackreferenceNumbers& backreference_numbers) const = 0;
 
     // modifying
     void do_increment() override;
@@ -738,8 +799,75 @@ private:
     // For example, if this GroupRegex is '(A)', 'm_child' is the
     // CharacterBlockRegex 'A'.
     std::unique_ptr<Regex> m_child;
+};
+
+
+// An instance of this class represents a group regex.
+//
+// For example, '(A)B' is the ConcatenationRegex of:
+// * GroupRegex '(A)'
+// * CharacterBlockRegex 'B'
+class GroupRegex final : public AbstractGroupRegex
+{
+public:
+    // instance creation and deletion
+    GroupRegex(std::unique_ptr<Regex> child, const GroupNumber& group_number);
+
+    // accessing
+    GroupNumber number() const;
+
+    // querying
+    bool has_number(const GroupNumber& group_number) const;
+
+private:
+    // copying
+    std::unique_ptr<Regex> do_clone() const override;
+
+    // accessing
+    using AbstractGroupRegex::do_rightmost_group;
+    GroupRegex* do_rightmost_group(const GroupNumber& group_number) override;
+    std::vector<const GroupRegex*> groups() const override;
+    const GroupRegex* yourself_or_enclosing_group() const override;
+
+    // querying
+    bool number_belongs_to(
+           const BackreferenceNumbers& backreference_numbers) const override;
+
+    // converting
+    std::string do_to_string() const override;
+
+    // data members
 
     GroupNumber m_group_number;
+};
+
+
+// An instance of this class represents a non-capturing group regex.
+//
+// For example, '(?:A)B' is the ConcatenationRegex of:
+// * NonCapturingGroupRegex '(?:A)'
+// * CharacterBlockRegex 'B'
+class NonCapturingGroupRegex final : public AbstractGroupRegex
+{
+public:
+    // instance creation and deletion
+    explicit NonCapturingGroupRegex(std::unique_ptr<Regex> child);
+
+private:
+    // copying
+    std::unique_ptr<Regex> do_clone() const override;
+
+    // accessing
+    using AbstractGroupRegex::do_rightmost_group;
+    GroupRegex* do_rightmost_group(const GroupNumber& group_number) override;
+    std::vector<const GroupRegex*> groups() const override;
+
+    // querying
+    bool number_belongs_to(
+           const BackreferenceNumbers& backreference_numbers) const override;
+
+    // converting
+    std::string do_to_string() const override;
 };
 
 
@@ -776,9 +904,12 @@ private:
                std::unique_ptr<Regex> right_child) const = 0;
 
     // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
     std::string do_explicit_characters() const override;
     void do_get_used_backreference_numbers(
            BackreferenceNumbers& used_backreference_numbers) const override;
+    std::vector<const GroupRegex*> groups() const override;
     virtual std::string operator_string() const = 0;
 
     // querying
@@ -935,6 +1066,8 @@ private:
     void rebuild_after_optimization();
 
     // accessing
+    std::vector<const BackreferenceRegex*>
+        backreferences_to(const GroupNumber& group_number) const override;
     bool do_constrain_once_with_current_value(
            Constraint& constraint, size_t offset) override;
     bool do_constrain_word_boundaries_with_current_value(
@@ -946,6 +1079,7 @@ private:
     GroupRegex* do_rightmost_group(const GroupNumber& group_number,
                                    const Regex*       from_child) override;
     GroupRegex* do_rightmost_group(const GroupNumber& group_number) override;
+    std::vector<const GroupRegex*> groups() const override;
     std::unique_ptr<Regex>& last_variable_child();
     virtual std::string repetition_suffix() const = 0;
 

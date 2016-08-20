@@ -167,6 +167,7 @@
     <ClCompile Include="..\..\source\unit_tests\grid.unit_tests.utils.cpp" />
     <ClCompile Include="..\..\source\solver\grid_cell.cpp" />
     <ClCompile Include="..\..\source\solver\grid_line.cpp" />
+    <ClCompile Include="..\..\source\solver\grid_line_regex.cpp" />
     <ClCompile Include="..\..\source\solver\grid_printer.cpp" />
     <ClCompile Include="..\..\source\solver\grid_reader.cpp" />
     <ClCompile Include="..\..\source\unit_tests\grid_reader.unit_tests.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\..\source\unit_tests\grid.unit_tests.utils.hpp" />
     <ClInclude Include="..\..\source\solver\grid_cell.hpp" />
     <ClInclude Include="..\..\source\solver\grid_line.hpp" />
+    <ClInclude Include="..\..\source\solver\grid_line_regex.hpp" />
     <ClInclude Include="..\..\source\solver\grid_printer.hpp" />
     <ClInclude Include="..\..\source\solver\grid_reader.hpp" />
     <ClInclude Include="..\..\source\solver\group_number.hpp" />

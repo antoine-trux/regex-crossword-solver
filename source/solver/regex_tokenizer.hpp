@@ -71,6 +71,7 @@ private:
     // querying
     bool at_end_of_string() const;
     bool has_pushed_back_tokens() const;
+    bool next_chars_are(const std::string& s) const;
     bool next_three_chars_are_octal_digits() const;
     bool not_at_end_of_string() const;
 
@@ -91,6 +92,7 @@ private:
     RegexToken consume_token_in_counted_repetition();
     RegexToken consume_token_outside_character_class();
     void push_back_char(char c);
+    void skip_chars(size_t num_chars);
 
     // data members
 

@@ -1,5 +1,5 @@
                        Regex Crossword Solver
-                           version 1.0.0
+                           version 1.1.0
 
 
 Contents
@@ -169,7 +169,7 @@ provided.
 
 Basic usage:
 
-[Linux, Cygwin]
+[Linux or Cygwin]
 $ cd /path_to_unzipped_package/build.<compiler>.release
 $ ./regex_crossword_solver <input file>
 
@@ -194,7 +194,7 @@ use option '--log'. In order to use this option:
 
 Then, for example:
 
-[Linux, Cygwin]
+[Linux or Cygwin]
 $ cd /path_to_unzipped_package/build.<compiler>.release
 $ ./regex_crossword_solver --log MIT.log ../grid_tests/MIT.input.txt
 
@@ -277,6 +277,9 @@ limitation, by adding '.*' (a "universal regex") to the crossword.
     * row 2 -> regex_1, regex_2
     after which both rows have the same number of regexes.
 
+Since version 1.1.0, Regex Crossword Solver optimizes away universal
+regexes, so no performance penalty results from adding them.
+
 10.b. Supported regular expressions
 -----------------------------------
 There are *many* regular expression standards, and they differ in
@@ -304,13 +307,16 @@ features supported by Python but not by Regex Crossword Solver:
 
 * {,n} - treated the same as {0,n} by Python
 
-* \uhhhh - 16-bit unicode character
+* \uhhhh - 16-bit Unicode character
 
-* \Uhhhhhhhh - 32-bit unicode character
+* \Uhhhhhhhh - 32-bit Unicode character
 
-* all the (? constructs - many puzzles in
+* the (? constructs - many puzzles in
   'https://regexcrossword.com/playerpuzzles' use these constructs,
   and are thus not solvable by Regex Crossword Solver
+* however, the following constructs *are* supported:
+  * (?: non-capturing group (supported since version 1.1.0)
+  * (?= positive lookahead (supported since version 1.1.0)
 
 Here is a (probably non-exhaustive) list of regular expression
 features which behave differently in Python and in Regex Crossword

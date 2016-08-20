@@ -1,0 +1,53 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 6
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[ALIEN]*(L|I|N|E|S)\1[^YOU]*'
+'...([\sin SIN]+)+'
+
+# row 2
+'[^A-D31337ER-ZG-O].?[ROM]?[MY].*'
+'.*[DOT].*(AT)$'
+
+# row 3
+'[AEIOU]+[^AEIOU]{1,2}\W[^AEIOU]+'
+'I[I]?.*[^[\]][ASH][HASH]+($)'
+
+# row 4
+'(C|W|SH)?(OULD)U?\s[B-E]?'
+'^[\w]+[^\w]+[2B|!2B]?'
+
+# row 5
+'.?\*[REFER]*'
+'.*[FOR]+(.)\1.*'
+
+# column 1
+'.*A[FIRE]+(IN|THE)*[HOLE]+'
+'^.{2,4}(?:([$_GET]))$'
+
+# column 2
+'.?[LOOLZ]+R?U?\\?\**$'
+'(SAY)*(LO|OU|UD)+.?'
+
+# column 3
+'(OUR)?[FUNERAL]*'
+'.*[HUNT].[4 FUN]*'
+
+# column 4
+'[\][ARE MADE\soon]+'
+'(.)[MURDER]?(\1\s?)[DRUM]*'
+
+# column 5
+'.?I(18n)?(AS|SA)?\sE*'
+'.*(S|\s|s){2}.*'
+
+# column 6
+'[NOTHING]{1,3}[TO BE]+'
+'\s?[NOT]+[HOT]+\s?..'

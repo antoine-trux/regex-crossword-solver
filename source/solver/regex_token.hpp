@@ -66,6 +66,9 @@ public:
         // ')'
         CLOSE_GROUP,
 
+        // no more tokens
+        END,
+
         // '$', '\Z'
         EPSILON_AT_END,
 
@@ -77,9 +80,6 @@ public:
 
         // '\B'
         EPSILON_NOT_AT_WORD_BOUNDARY,
-
-        // no more tokens
-        END,
 
         // invalid token
         INVALID,
@@ -98,6 +98,12 @@ public:
 
         // '('
         OPEN_GROUP,
+
+        // '(?:'
+        OPEN_NON_CAPTURING_GROUP,
+
+        // '(?='
+        OPEN_POSITIVE_LOOKAHEAD,
 
         // '|'
         OR,

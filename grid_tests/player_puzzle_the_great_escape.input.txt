@@ -1,0 +1,51 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 5
+num_cols = 5
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'[\\\d\/]+\\?\/\*+'
+'[^2048]+'
+
+# row 2
+'(5\/2|8\/1|6\\)+'
+'[^:3]+'
+
+# row 3
+'(\d).\1(\\)+\??'
+'[^3072].{3}[^\\]'
+
+# row 4
+'[^192768]+'
+'(\\){2,}[\^\d]+(\/\/|\\\/\\)'
+
+# row 5
+'[\^\\D]{3}\(?:\)'
+'.*[:D]?.*'
+
+# column 1
+'\\?[2-4]\/?(\d)+\\.+'
+'.[^1536]+[^\\\w]'
+
+# column 2
+'\/?\/?0?\\?\\?\/?'
+'[^lol]+'
+
+# column 3
+'(\d|\*)1(\d)\2\\?D'
+'[02468].*'
+
+# column 4
+'[\\\/\d]{4}.'
+# \e => bad escape
+# '[^\escape]+'
+'[^escape]+'
+
+# column 5
+'\**\\?\\??\\?.+'
+'.*\??.*'

@@ -142,6 +142,32 @@ TEST_F(RegexTokenizerTest, outside_character_class_open_close_group)
     EXPECT_EQ(RTT::CLOSE_GROUP, token_close.type());
 }
 
+TEST_F(RegexTokenizerTest, outside_character_class_positive_lookahead)
+{
+    RegexTokenizer tokenizer("(?=A)");
+
+    const auto token_open = tokenizer.consume_token();
+    EXPECT_EQ(RTT::OPEN_POSITIVE_LOOKAHEAD, token_open.type());
+
+    tokenizer.consume_token();
+
+    const auto token_close = tokenizer.consume_token();
+    EXPECT_EQ(RTT::CLOSE_GROUP, token_close.type());
+}
+
+TEST_F(RegexTokenizerTest, outside_character_class_non_capturing_group)
+{
+    RegexTokenizer tokenizer("(?:A)");
+
+    const auto token_open = tokenizer.consume_token();
+    EXPECT_EQ(RTT::OPEN_NON_CAPTURING_GROUP, token_open.type());
+
+    tokenizer.consume_token();
+
+    const auto token_close = tokenizer.consume_token();
+    EXPECT_EQ(RTT::CLOSE_GROUP, token_close.type());
+}
+
 TEST_F(RegexTokenizerTest, outside_character_class_unsupported_open_group)
 {
     RegexTokenizer tokenizer("(?A)");

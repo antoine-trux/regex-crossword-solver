@@ -1,0 +1,52 @@
+first 2 solution(s) found (there might be other solutions):
+
+(if you want to see if there are other solutions,
+ increase the value of command line option '--stop-after')
+
+ -- -- -- -- -- 
+|B |L |E |A |T |
+ -- -- -- -- -- 
+|I |N |  |  |A |
+ -- -- -- -- -- 
+|N |D |  |B |A |
+ -- -- -- -- -- 
+|B |B |L |I |E |
+ -- -- -- -- -- 
+|  |  |I |F |  |
+ -- -- -- -- -- 
+|L |L |  |O |N |
+ -- -- -- -- -- 
+|  |H |I |S |  |
+ -- -- -- -- -- 
+|N |A |C |K |  |
+ -- -- -- -- -- 
+|W |I |T |H |  |
+ -- -- -- -- -- 
+|A |  |C |C |R |
+ -- -- -- -- -- 
+|E |A |M |! |  |
+ -- -- -- -- -- 
+
+ -- -- -- -- -- 
+|B |L |E |A |T |
+ -- -- -- -- -- 
+|I |N |  |  |A |
+ -- -- -- -- -- 
+|N |D |  |B |A |
+ -- -- -- -- -- 
+|B |B |L |I |E |
+ -- -- -- -- -- 
+|  |  |I |F |  |
+ -- -- -- -- -- 
+|L |L |  |O |N |
+ -- -- -- -- -- 
+|  |H |I |S |  |
+ -- -- -- -- -- 
+|N |A |C |K |  |
+ -- -- -- -- -- 
+|W |I |T |H |  |
+ -- -- -- -- -- 
+|A |  |C |R |R |
+ -- -- -- -- -- 
+|E |A |M |! |  |
+ -- -- -- -- -- 

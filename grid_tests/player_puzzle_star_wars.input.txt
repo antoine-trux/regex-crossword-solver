@@ -1,0 +1,34 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = hexagonal
+
+num_regexes_per_line = 1
+
+# the regexes are listed counterclockwise
+
+# horizontal
+'[A-G](.)[L-Z](\1)'
+'(?=.*U.*)[^"BARG"]+'
+'[TIME|SR]+'
+'(TE|EP|TH|A)+'
+'(WE|O)+[FOR]+'
+'(FO|E|TH)+'
+'R?[A-E]{2}\W'
+
+# south-east -> north-west
+'[^BEFW]+'
+'C\w{3}[^T]'
+'(.)(\1)+[^D]'
+'\W[EFG][RUST]+\w'
+'(.)(\1)[^E]+(\1)'
+'[A-I]{4}N'
+'(E|PM)+O'
+
+# north-east -> south-west
+'.*\!'
+'[MZ](E)[OF]+\1'
+'\w[ACID]\w+'
+'\w[DTG]{2}\w+'
+'(.)(\1)(WT|SE)+'
+'[AEIOUT]+'
+'[RTD]+["BA"]+'

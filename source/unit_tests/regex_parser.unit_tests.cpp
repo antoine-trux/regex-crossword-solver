@@ -55,6 +55,9 @@ TEST_F(RegexParserTest, parse)
                                                "(A+)",
                                                "(A?)",
                                                "((A))",
+                                               "(?:)",
+                                               "(?:A)",
+                                               "(?:(?:A))",
                                                "A*",
                                                "A+",
                                                "A?",
@@ -73,7 +76,10 @@ TEST_F(RegexParserTest, parse)
                                                R"(\d)",
                                                R"([\d])",
                                                R"(A\s[B\s])",
-                                               "[A-Z]" };
+                                               "[A-Z]",
+                                               R"(^A\bB\BC$)",
+                                               "(?=A)",
+                                               R"((?=(B)\1)(C*)\2)" };
 
     for (const auto& regex_as_string : regexes_as_string)
     {
@@ -117,9 +123,21 @@ TEST_F(RegexParserTest, parse_throws_invalid_range_2)
     EXPECT_THROW(Regex::parse("[Z-A]"), RegexParseException);
 }
 
+TEST_F(RegexParserTest, parse_throws_consume_invalid_token)
+{
+    RegexParser parser(R"(\)");
+    EXPECT_THROW(parser.consume_and_check_token(), RegexParseException);
+}
+
 TEST_F(RegexParserTest, parse_throws_group_without_closing_parenthesis)
 {
     EXPECT_THROW(Regex::parse("(A"), RegexParseException);
+}
+
+TEST_F(RegexParserTest,
+       parse_throws_non_capturing_group_without_closing_parenthesis)
+{
+    EXPECT_THROW(Regex::parse("(?:A"), RegexParseException);
 }
 
 TEST_F(RegexParserTest, parse_throws_invalid_right_side_of_concatenation)
@@ -147,13 +165,17 @@ TEST_F(RegexParserTest, parse_throws_invalid_repetition_count)
     EXPECT_THROW(Regex::parse("A{,1"), RegexParseException);
 }
 
-TEST_F(RegexParserTest, consume_and_check_token_throws)
+TEST_F(RegexParserTest, parse_throws_lookahead_without_closing_parenthesis)
 {
-    RegexParser parser(R"(\)");
-    EXPECT_THROW(parser.consume_and_check_token(), RegexParseException);
+    EXPECT_THROW(Regex::parse("(?=A"), RegexParseException);
 }
 
 TEST_F(RegexParserTest, check_no_self_references)
 {
     EXPECT_THROW(Regex::parse(R"((\1))"), RegexStructureException);
+}
+
+TEST_F(RegexParserTest, check_lookaheads_are_context_free)
+{
+    EXPECT_THROW(Regex::parse(R"((?=(A)\1)\1)"), RegexStructureException);
 }

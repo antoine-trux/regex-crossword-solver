@@ -98,6 +98,11 @@ TEST_F(GridReaderTest, dos_format)
     EXPECT_EQ(1, grid->all_cells().size());
 }
 
+TEST_F(GridReaderTest, inexistent_input_file)
+{
+    EXPECT_THROW(GridReader::read("inexistent.input.txt"), InputFileException);
+}
+
 TEST_F(GridReaderTest, nonempty_line_with_only_whitespace)
 {
     istringstream iss(" \n");
@@ -144,10 +149,17 @@ TEST_F(GridReaderTest, rectangular_missing_num_rows_value)
     EXPECT_THROW(GridReader::read(iss), InputFileException);
 }
 
-TEST_F(GridReaderTest, rectangular_invalid_num_rows_value)
+TEST_F(GridReaderTest, rectangular_invalid_num_rows_value_x)
 {
     istringstream iss("shape = rectangular\n"
                       "num_rows = x\n");
+    EXPECT_THROW(GridReader::read(iss), InputFileException);
+}
+
+TEST_F(GridReaderTest, rectangular_invalid_num_rows_value_0)
+{
+    istringstream iss("shape = rectangular\n"
+                      "num_rows = 0\n");
     EXPECT_THROW(GridReader::read(iss), InputFileException);
 }
 

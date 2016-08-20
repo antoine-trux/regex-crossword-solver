@@ -554,7 +554,7 @@ CommandLine::print_version(ostream& os)
     const string indentation(4, ' ');
 
     os << endl
-       << indentation << "Regex Crossword Solver, version 1.0.0" << endl
+       << indentation << "Regex Crossword Solver, version 1.1.0" << endl
        << indentation << "Copyright (c) 2016 Antoine Trux" << endl
        << endl;
 }

@@ -64,7 +64,7 @@ using namespace std;
 //         non_empty_factor
 //         repetition
 //         |
-//         group_or_atom
+//         lookahead_or_group_or_atom
 //
 //     repetition ->
 //         KLEENE_STAR_REPETITION
@@ -100,13 +100,30 @@ using namespace std;
 //         REPETITION_COUNT_SEPARATOR
 //         CLOSE_COUNTED_REPETITION
 //
-//     group_or_atom ->
+//     lookahead_or_group_or_atom ->
+//         positive_lookahead
+//         |
 //         group
 //         |
 //         atom
 //
 //     group ->
+//         capturing_group
+//         |
+//         non_capturing_group
+//
+//     capturing_group ->
 //         OPEN_GROUP
+//         regex
+//         CLOSE_GROUP
+//
+//     non_capturing_group ->
+//         OPEN_NON_CAPTURING_GROUP
+//         regex
+//         CLOSE_GROUP
+//
+//     positive_lookahead ->
+//         OPEN_POSITIVE_LOOKAHEAD
 //         regex
 //         CLOSE_GROUP
 //
@@ -218,7 +235,7 @@ using namespace std;
 //         epsilon
 //
 //     non_empty_factor ->
-//         group_or_atom
+//         lookahead_or_group_or_atom
 //         non_empty_factor'
 //
 //     non_empty_factor' ->
@@ -379,6 +396,37 @@ RegexParser::parse_backreference()
     }
 
     return Utils::make_unique<BackreferenceRegex>(group_number);
+}
+
+// Implement this production rule:
+//
+//     capturing_group ->
+//         OPEN_GROUP
+//         regex
+//         CLOSE_GROUP
+unique_ptr<Regex>
+RegexParser::parse_capturing_group()
+{
+    const auto token_open = peek_and_check_token();
+    if (token_open.type() != RTT::OPEN_GROUP)
+    {
+        return nullptr;
+    }
+    m_tokenizer.consume_token();
+
+    GroupNumber group_number = m_next_group_number;
+    ++m_next_group_number;
+
+    auto regex(parse_regex());
+    assert(regex != nullptr);
+
+    const auto token_close = consume_and_check_token();
+    if (token_close.type() != RTT::CLOSE_GROUP)
+    {
+        throw_parse_exception("missing ')'");
+    }
+
+    return Utils::make_unique<GroupRegex>(move(regex), group_number);
 }
 
 // Implement this production rule:
@@ -750,43 +798,38 @@ RegexParser::parse_fixed_repetition(unique_ptr<Regex> regex)
 // Implement this production rule:
 //
 //     group ->
-//         OPEN_GROUP
-//         regex
-//         CLOSE_GROUP
+//         capturing_group
+//         |
+//         non_capturing_group
 unique_ptr<Regex>
 RegexParser::parse_group()
 {
-    const auto token_open = peek_and_check_token();
-    if (token_open.type() != RTT::OPEN_GROUP)
+    auto capturing_group(parse_capturing_group());
+    if (capturing_group != nullptr)
     {
-        return nullptr;
-    }
-    m_tokenizer.consume_token();
-
-    GroupNumber group_number = m_next_group_number;
-    ++m_next_group_number;
-
-    auto regex(parse_regex());
-    assert(regex != nullptr);
-
-    const auto token_close = consume_and_check_token();
-    if (token_close.type() != RTT::CLOSE_GROUP)
-    {
-        throw_parse_exception("missing ')'");
+        return capturing_group;
     }
 
-    return Utils::make_unique<GroupRegex>(move(regex), group_number);
+    return parse_non_capturing_group();
 }
 
 // Implement this production rule:
 //
-//     group_or_atom ->
+//     lookahead_or_group_or_atom ->
+//         positive_lookahead
+//         |
 //         group
 //         |
 //         atom
 unique_ptr<Regex>
-RegexParser::parse_group_or_atom()
+RegexParser::parse_lookahead_or_group_or_atom()
 {
+    auto positive_lookahead(parse_positive_lookahead());
+    if (positive_lookahead != nullptr)
+    {
+        return positive_lookahead;
+    }
+
     auto group(parse_group());
     if (group != nullptr)
     {
@@ -798,19 +841,47 @@ RegexParser::parse_group_or_atom()
 
 // Implement this production rule:
 //
+//     non_capturing_group ->
+//         OPEN_NON_CAPTURING_GROUP
+//         regex
+//         CLOSE_GROUP
+unique_ptr<Regex>
+RegexParser::parse_non_capturing_group()
+{
+    const auto token_open = peek_and_check_token();
+    if (token_open.type() != RTT::OPEN_NON_CAPTURING_GROUP)
+    {
+        return nullptr;
+    }
+    m_tokenizer.consume_token();
+
+    auto regex(parse_regex());
+    assert(regex != nullptr);
+
+    const auto token_close = consume_and_check_token();
+    if (token_close.type() != RTT::CLOSE_GROUP)
+    {
+        throw_parse_exception("missing ')'");
+    }
+
+    return Utils::make_unique<NonCapturingGroupRegex>(move(regex));
+}
+
+// Implement this production rule:
+//
 //     non_empty_factor ->
 //         group_or_atom
 //         non_empty_factor'
 unique_ptr<Regex>
 RegexParser::parse_non_empty_factor()
 {
-    auto group_or_atom(parse_group_or_atom());
-    if (group_or_atom == nullptr)
+    auto lookahead_or_group_or_atom(parse_lookahead_or_group_or_atom());
+    if (lookahead_or_group_or_atom == nullptr)
     {
         return nullptr;
     }
 
-    return parse_non_empty_factor_prime(move(group_or_atom));
+    return parse_non_empty_factor_prime(move(lookahead_or_group_or_atom));
 }
 
 // Implement this production rule:
@@ -832,6 +903,34 @@ RegexParser::parse_non_empty_factor_prime(unique_ptr<Regex> regex)
     }
 
     return parse_non_empty_factor_prime(move(regex));
+}
+
+// Implement this production rule:
+//
+//     positive_lookahead ->
+//         OPEN_POSITIVE_LOOKAHEAD
+//         regex
+//         CLOSE_GROUP
+unique_ptr<Regex>
+RegexParser::parse_positive_lookahead()
+{
+    const auto token_open = peek_and_check_token();
+    if (token_open.type() != RTT::OPEN_POSITIVE_LOOKAHEAD)
+    {
+        return nullptr;
+    }
+    m_tokenizer.consume_token();
+
+    auto regex(parse_regex());
+    assert(regex != nullptr);
+
+    const auto token_close = consume_and_check_token();
+    if (token_close.type() != RTT::CLOSE_GROUP)
+    {
+        throw_parse_exception("missing ')'");
+    }
+
+    return Utils::make_unique<PositiveLookaheadRegex>(move(regex));
 }
 
 // Implement this production rule:

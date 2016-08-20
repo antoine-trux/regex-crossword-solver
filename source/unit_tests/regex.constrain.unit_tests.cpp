@@ -231,6 +231,19 @@ TEST_F(RegexConstrainTest, group)
     check_constraints(*regex, constraint, 1, {});
 }
 
+TEST_F(RegexConstrainTest, non_capturing_group)
+{
+    const auto regex = Regex::parse("(?:A)");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 1;
+    const auto constraint = Constraint::all(constraint_size);
+
+    check_constraints(*regex, constraint, 0, { Constraint({ "A" }) });
+    check_constraints(*regex, constraint, 1, {});
+}
+
 TEST_F(RegexConstrainTest, concatenation_1)
 {
     const auto regex = Regex::parse("AB");
@@ -709,6 +722,24 @@ TEST_F(RegexConstrainTest, backreference_01)
 
 TEST_F(RegexConstrainTest, backreference_02)
 {
+    const auto regex = Regex::parse(R"((A)(?:)\1)");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 3;
+    const auto constraint = Constraint::all(constraint_size);
+
+    check_constraints(*regex, constraint, 0, { Constraint({ "A", "A", all }) });
+    check_constraints(*regex, constraint, 1, { Constraint({ all, "A", "A" }) });
+
+    for (size_t begin_pos = 2; begin_pos <= constraint_size; ++begin_pos)
+    {
+        check_constraints(*regex, constraint, begin_pos, {});
+    }
+}
+
+TEST_F(RegexConstrainTest, backreference_03)
+{
     const auto regex = Regex::parse(R"(()\1)");
 
     const auto all = set_alphabet(*regex);
@@ -720,7 +751,7 @@ TEST_F(RegexConstrainTest, backreference_02)
     check_constraints(*regex, constraint, 1, { Constraint({ all }) });
 }
 
-TEST_F(RegexConstrainTest, backreference_03)
+TEST_F(RegexConstrainTest, backreference_04)
 {
     const auto regex = Regex::parse(R"((A)*B\1)");
 
@@ -741,7 +772,7 @@ TEST_F(RegexConstrainTest, backreference_03)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_04)
+TEST_F(RegexConstrainTest, backreference_05)
 {
     const auto regex = Regex::parse(R"((A)?\1)");
 
@@ -761,7 +792,7 @@ TEST_F(RegexConstrainTest, backreference_04)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_05)
+TEST_F(RegexConstrainTest, backreference_06)
 {
     const auto regex = Regex::parse(R"((A)(B)\2\1)");
 
@@ -779,7 +810,7 @@ TEST_F(RegexConstrainTest, backreference_05)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_06)
+TEST_F(RegexConstrainTest, backreference_07)
 {
     const auto regex = Regex::parse(R"((A)(B)\1\2)");
 
@@ -797,7 +828,7 @@ TEST_F(RegexConstrainTest, backreference_06)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_07)
+TEST_F(RegexConstrainTest, backreference_08)
 {
     const auto regex = Regex::parse(R"((.)(.)\2\1)");
 
@@ -815,7 +846,7 @@ TEST_F(RegexConstrainTest, backreference_07)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_08)
+TEST_F(RegexConstrainTest, backreference_09)
 {
     const auto regex = Regex::parse(R"((.)(.)(.)\3\2\1)");
 
@@ -833,7 +864,7 @@ TEST_F(RegexConstrainTest, backreference_08)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_09)
+TEST_F(RegexConstrainTest, backreference_10)
 {
     const auto regex = Regex::parse(R"((.)(.)(.)\1\2\3)");
 
@@ -851,7 +882,7 @@ TEST_F(RegexConstrainTest, backreference_09)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_10)
+TEST_F(RegexConstrainTest, backreference_11)
 {
     const auto regex = Regex::parse(R"(((B)*|C)(A|\2)(D|E\2))");
 
@@ -883,7 +914,7 @@ TEST_F(RegexConstrainTest, backreference_10)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_11)
+TEST_F(RegexConstrainTest, backreference_12)
 {
     const auto regex = Regex::parse(R"((A)\1*)");
 
@@ -900,7 +931,7 @@ TEST_F(RegexConstrainTest, backreference_11)
     check_constraints(*regex, constraint, 2, {});
 }
 
-TEST_F(RegexConstrainTest, backreference_12)
+TEST_F(RegexConstrainTest, backreference_13)
 {
     const auto regex = Regex::parse(R"(A+(..)\1*)");
 
@@ -933,7 +964,7 @@ TEST_F(RegexConstrainTest, backreference_12)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_13)
+TEST_F(RegexConstrainTest, backreference_14)
 {
     const auto regex = Regex::parse(R"((A|B)\1)");
 
@@ -951,7 +982,7 @@ TEST_F(RegexConstrainTest, backreference_13)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_14)
+TEST_F(RegexConstrainTest, backreference_15)
 {
     const auto regex = Regex::parse(R"((A|B)(A|B)\1\2)");
 
@@ -972,7 +1003,7 @@ TEST_F(RegexConstrainTest, backreference_14)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_15)
+TEST_F(RegexConstrainTest, backreference_16)
 {
     const auto regex = Regex::parse(R"((A)|B\1)");
 
@@ -989,7 +1020,7 @@ TEST_F(RegexConstrainTest, backreference_15)
                       { Constraint({ all, all, "A" }) });
 }
 
-TEST_F(RegexConstrainTest, backreference_16)
+TEST_F(RegexConstrainTest, backreference_17)
 {
     const auto regex = Regex::parse(R"((A)(B)|(\1|\2))");
 
@@ -1009,7 +1040,7 @@ TEST_F(RegexConstrainTest, backreference_16)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_17)
+TEST_F(RegexConstrainTest, backreference_18)
 {
     const auto regex = Regex::parse(R"((((A)(B))|\4)\3)");
 
@@ -1027,7 +1058,7 @@ TEST_F(RegexConstrainTest, backreference_17)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_18)
+TEST_F(RegexConstrainTest, backreference_19)
 {
     const auto regex = Regex::parse(R"(((A)|(B))(\2|\3))");
 
@@ -1045,7 +1076,7 @@ TEST_F(RegexConstrainTest, backreference_18)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_19)
+TEST_F(RegexConstrainTest, backreference_20)
 {
     const auto regex = Regex::parse(R"(((A)|(B))(\2\3))");
 
@@ -1060,7 +1091,7 @@ TEST_F(RegexConstrainTest, backreference_19)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_20)
+TEST_F(RegexConstrainTest, backreference_21)
 {
     const auto regex = Regex::parse(R"(((A)|B)(C|\2))");
 
@@ -1079,7 +1110,7 @@ TEST_F(RegexConstrainTest, backreference_20)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_21)
+TEST_F(RegexConstrainTest, backreference_22)
 {
     const auto regex = Regex::parse(R"((A)(\1)\2)");
 
@@ -1097,7 +1128,7 @@ TEST_F(RegexConstrainTest, backreference_21)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_22)
+TEST_F(RegexConstrainTest, backreference_23)
 {
     const auto regex = Regex::parse(R"((A|B)(\1)\2)");
 
@@ -1116,7 +1147,7 @@ TEST_F(RegexConstrainTest, backreference_22)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_23)
+TEST_F(RegexConstrainTest, backreference_24)
 {
     const auto regex = Regex::parse(R"((A|B)(\1)(\2)\3)");
 
@@ -1135,7 +1166,7 @@ TEST_F(RegexConstrainTest, backreference_23)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_24)
+TEST_F(RegexConstrainTest, backreference_25)
 {
     const auto regex = Regex::parse(R"(((A|B))((\2))\4)");
 
@@ -1154,7 +1185,7 @@ TEST_F(RegexConstrainTest, backreference_24)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_25)
+TEST_F(RegexConstrainTest, backreference_26)
 {
     const auto regex = Regex::parse(R"((A|B)C(\1)(\1)C\2\3)");
 
@@ -1173,7 +1204,7 @@ TEST_F(RegexConstrainTest, backreference_25)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_26)
+TEST_F(RegexConstrainTest, backreference_27)
 {
     const auto regex = Regex::parse(R"((A|B)C((\1)(\1))C\3\4C\2)");
 
@@ -1192,7 +1223,7 @@ TEST_F(RegexConstrainTest, backreference_26)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_27)
+TEST_F(RegexConstrainTest, backreference_28)
 {
     const auto regex = Regex::parse(R"((A|B)C(\1\1)C\2)");
 
@@ -1211,7 +1242,7 @@ TEST_F(RegexConstrainTest, backreference_27)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_28)
+TEST_F(RegexConstrainTest, backreference_29)
 {
     const auto regex = Regex::parse(R"(((A|B)\2)*)");
 
@@ -1242,7 +1273,7 @@ TEST_F(RegexConstrainTest, backreference_28)
                       { Constraint({ all, all, all, all }) });
 }
 
-TEST_F(RegexConstrainTest, backreference_29)
+TEST_F(RegexConstrainTest, backreference_30)
 {
     const auto regex = Regex::parse(R"(([AB])\1)");
 
@@ -1259,7 +1290,7 @@ TEST_F(RegexConstrainTest, backreference_29)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_30)
+TEST_F(RegexConstrainTest, backreference_31)
 {
     const auto regex = Regex::parse(R"(([AB])\1)");
 
@@ -1276,7 +1307,7 @@ TEST_F(RegexConstrainTest, backreference_30)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_31)
+TEST_F(RegexConstrainTest, backreference_32)
 {
     const auto regex = Regex::parse(R"((..?)\1)");
 
@@ -1299,7 +1330,7 @@ TEST_F(RegexConstrainTest, backreference_31)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_32)
+TEST_F(RegexConstrainTest, backreference_33)
 {
     const auto regex = Regex::parse(R"((A|BB)\1)");
 
@@ -1322,7 +1353,7 @@ TEST_F(RegexConstrainTest, backreference_32)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_33)
+TEST_F(RegexConstrainTest, backreference_34)
 {
     // Excerpt from http://www.regular-expressions.info/backref.html,
     // section "Repetition and Backreferences":
@@ -1360,7 +1391,7 @@ TEST_F(RegexConstrainTest, backreference_33)
     }
 }
 
-TEST_F(RegexConstrainTest, backreference_34)
+TEST_F(RegexConstrainTest, backreference_35)
 {
     const auto regex = Regex::parse(R"(((\bA)| \2){2})");
 
@@ -1657,6 +1688,71 @@ TEST_F(RegexConstrainTest, word_boundaries_14)
     const auto constraint = Constraint::all(constraint_size);
 
     check_constraints(*regex, constraint, 0, {});
+}
+
+TEST_F(RegexConstrainTest, positive_lookahead_1)
+{
+    const auto regex = Regex::parse("(?=A)");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 2;
+    const auto constraint = Constraint::all(constraint_size);
+
+    check_constraints(*regex, constraint, 0, { Constraint({ "A", all }) });
+    check_constraints(*regex, constraint, 1, { Constraint({ all, "A" }) });
+    check_constraints(*regex, constraint, 2, {});
+}
+
+TEST_F(RegexConstrainTest, positive_lookahead_2)
+{
+    const auto regex = Regex::parse("(?=A|BC)");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 3;
+    const auto constraint = Constraint::all(constraint_size);
+
+    check_constraints(*regex, constraint, 0,
+                      { Constraint({ "AB", all, all }) });
+    check_constraints(*regex, constraint, 1,
+                      { Constraint({ all, "AB", all }) });
+    check_constraints(*regex, constraint, 2,
+                      { Constraint({ all, all, "A" }) });
+    check_constraints(*regex, constraint, 3, {});
+}
+
+TEST_F(RegexConstrainTest, positive_lookahead_3)
+{
+    const auto regex = Regex::parse(R"((A(?=B)).\1)");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 3;
+    const auto constraint = Constraint::all(constraint_size);
+
+    check_constraints(*regex, constraint, 0,
+                      { Constraint({ "A", "B", "A" }) });
+
+    for (size_t begin_pos = 1; begin_pos <= constraint_size; ++begin_pos)
+    {
+        check_constraints(*regex, constraint, begin_pos, {});
+    }
+}
+
+TEST_F(RegexConstrainTest, positive_lookahead_4)
+{
+    const auto regex = Regex::parse("(?=A)(?=B)[ABC]");
+
+    const auto all = set_alphabet(*regex);
+
+    const size_t constraint_size = 1;
+    const auto constraint = Constraint::all(constraint_size);
+
+    for (size_t begin_pos = 0; begin_pos <= constraint_size; ++begin_pos)
+    {
+        check_constraints(*regex, constraint, 0, {});
+    }
 }
 
 TEST_F(RegexConstrainTest, other_1)

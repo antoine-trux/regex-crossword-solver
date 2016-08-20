@@ -28,6 +28,7 @@
 
 #include "grid.hpp"
 #include "grid_cell.hpp"
+#include "grid_line_regex.hpp"
 #include "logger.hpp"
 #include "regex.hpp"
 #include "utils.hpp"
@@ -58,15 +59,14 @@ GridLine::~GridLine() = default;
 void
 GridLine::build_regexes(const vector<string>& regexes_as_strings)
 {
-    m_regexes_as_strings = regexes_as_strings;
+    m_grid_line_regexes.clear();
 
-    m_regexes.clear();
     transform(regexes_as_strings.cbegin(),
               regexes_as_strings.cend(),
-              back_inserter(m_regexes),
+              back_inserter(m_grid_line_regexes),
               [](const string& regex_as_string)
               {
-                  return Regex::parse(regex_as_string);
+                  return GridLineRegex(regex_as_string);
               });
 }
 
@@ -81,17 +81,7 @@ GridLine::set_cell(shared_ptr<GridCell> cell, size_t index_of_cell_on_line)
 void
 GridLine::copy_regexes(const GridLine& rhs)
 {
-    m_regexes_as_strings = rhs.m_regexes_as_strings;
-
-    m_regexes.clear();
-    transform(rhs.m_regexes.cbegin(),
-              rhs.m_regexes.cend(),
-              back_inserter(m_regexes),
-              [](const unique_ptr<Regex>& regex)
-              {
-                  return regex->clone();
-              });
-
+    m_grid_line_regexes = rhs.m_grid_line_regexes;
     m_saved_constraint = rhs.m_saved_constraint;
 }
 
@@ -130,12 +120,13 @@ GridLine::constraint_from_cells() const
 string
 GridLine::explicit_regex_characters() const
 {
-    return accumulate(m_regexes.cbegin(),
-                      m_regexes.cend(),
+    return accumulate(m_grid_line_regexes.cbegin(),
+                      m_grid_line_regexes.cend(),
                       string(),
-                      [](const string& sum, const unique_ptr<Regex>& regex)
+                      [](const string&        sum,
+                         const GridLineRegex& grid_line_regex)
                       {
-                          return sum + regex->explicit_characters();
+                          return sum + grid_line_regex.explicit_characters();
                       });
 }
 
@@ -148,18 +139,21 @@ GridLine::num_cells() const
 string
 GridLine::regexes_as_string() const
 {
-    assert(!m_regexes_as_strings.empty());
+    assert(!m_grid_line_regexes.empty());
     const string separator = ", ";
-    string result = accumulate(m_regexes_as_strings.cbegin(),
-                               m_regexes_as_strings.cend(),
-                               string(),
-                               [&separator](const string& sum,
-                                            const string& regex_as_string)
-                               {
-                                   return sum                            +
-                                          Utils::quoted(regex_as_string) +
-                                          separator;
-                               });
+
+    string result =
+        accumulate(m_grid_line_regexes.cbegin(),
+                   m_grid_line_regexes.cend(),
+                   string(),
+                   [&separator](const string&        sum,
+                                const GridLineRegex& grid_line_regex)
+                   {
+                       return sum                                        +
+                              Utils::quoted(grid_line_regex.as_string()) +
+                              separator;
+                   });
+
     // Remove the last separator from 'result'.
     result.resize(result.size() - separator.size());
     return result;
@@ -255,9 +249,9 @@ GridLine::constrain_regexes()
 {
     auto constraint = constraint_from_cells();
 
-    for (const auto& regex : m_regexes)
+    for (auto& grid_line_regex : m_grid_line_regexes)
     {
-        constraint = regex->constrain(constraint);
+        constraint = grid_line_regex.constrain(constraint);
 
         if (constraint.is_impossible())
         {
@@ -272,13 +266,10 @@ GridLine::constrain_regexes()
 void
 GridLine::optimize(const RegexOptimizations& optimizations)
 {
-    transform(m_regexes.begin(),
-              m_regexes.end(),
-              m_regexes.begin(),
-              [&optimizations](unique_ptr<Regex>& regex)
-              {
-                  return Regex::optimize(move(regex), optimizations);
-              });
+    for (auto& grid_line_regex : m_grid_line_regexes)
+    {
+        grid_line_regex.optimize(optimizations);
+    }
 }
 
 // Update the cells of this line with 'new_constraint'.

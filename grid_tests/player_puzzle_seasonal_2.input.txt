@@ -1,0 +1,41 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 3
+num_cols = 5
+
+num_regexes_per_row = 2
+num_regexes_per_col = 2
+
+# row 1
+'H?[JUL]*(MR)(CC|IC|CI).'
+'^((?:((.)[P-U]).)I)\3$'
+
+# row 2
+'A?B?C?D?E?Y[D-Q](SA|AS)'
+'.+S.+S?'
+
+# row 3
+'[\w\s]{2}[I-Z]+'
+'[N-Z].*'
+
+# column 1
+'[DECEMBER]+'
+'[HORSE]?[MORSE]+'
+
+# column 2
+'.*'
+'^..\W?$'
+
+# column 3
+'[M-TA-H]+'
+'[^SCHOOL]?[CHURCH]{1,}'
+
+# column 4
+'^.{2}[^Q]'
+'.A?.T?Q*'
+
+# column 5
+'.*'
+'.{1,2}H?S?A?'

@@ -63,7 +63,7 @@ public:
     static std::unique_ptr<Regex> parse(const std::string& regex_as_string);
 
 private:
-    FRIEND_TEST(RegexParserTest, consume_and_check_token_throws);
+    FRIEND_TEST(RegexParserTest, parse_throws_consume_invalid_token);
 
     // instance creation and deletion
     explicit RegexParser(const std::string& regex_as_string);
@@ -74,6 +74,7 @@ private:
     std::unique_ptr<CharacterBlock> parse_any_character();
     std::unique_ptr<Regex>          parse_atom();
     std::unique_ptr<Regex>          parse_backreference();
+    std::unique_ptr<Regex>          parse_capturing_group();
     std::unique_ptr<CharacterBlock> parse_character_block();
     std::unique_ptr<Regex>          parse_character_block_regex();
     std::unique_ptr<CharacterBlock> parse_character_class();
@@ -94,10 +95,12 @@ private:
     std::unique_ptr<Regex>          parse_fixed_repetition(
                                       std::unique_ptr<Regex> regex);
     std::unique_ptr<Regex>          parse_group();
-    std::unique_ptr<Regex>          parse_group_or_atom();
+    std::unique_ptr<Regex>          parse_lookahead_or_group_or_atom();
+    std::unique_ptr<Regex>          parse_non_capturing_group();
     std::unique_ptr<Regex>          parse_non_empty_factor();
     std::unique_ptr<Regex>          parse_non_empty_factor_prime(
                                       std::unique_ptr<Regex> regex);
+    std::unique_ptr<Regex>          parse_positive_lookahead();
     std::unique_ptr<Regex>          parse_range_repetition(
                                       std::unique_ptr<Regex> regex);
     std::unique_ptr<Regex>          parse_range_repetition_to_infinity(

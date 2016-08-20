@@ -35,6 +35,7 @@
 
 class Grid;
 class GridCell;
+class GridLineRegex;
 class Regex;
 class RegexOptimizations;
 
@@ -119,10 +120,8 @@ private:
     //   is a number in [0, 13).
     size_t m_index_within_direction;
 
-    // 'm_regexes_as_strings' and 'm_regexes' contain the same number of
-    // elements. Many grids have a single regex per line, some have two.
-    std::vector<std::string>            m_regexes_as_strings;
-    std::vector<std::unique_ptr<Regex>> m_regexes;
+    // Many grids have a single regex per line, some have two.
+    std::vector<GridLineRegex> m_grid_line_regexes;
 
     // The same cell is shared by all the lines that go through it - for
     // example, in a rectangular grid, each cell is shared by one row

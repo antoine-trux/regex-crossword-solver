@@ -1,0 +1,60 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 11
+num_cols = 5
+
+num_regexes_per_row = 2
+num_regexes_per_col = 1
+
+# row 1
+'(BL|E){2}[A-U]{2}'
+'[ABLE]*[T-V]'
+
+# row 2
+'(\D|\s)*A'
+'[VAGINA\s]*'
+
+# row 3
+'(ND|BA|\s)*'
+'[\sBANDEX]*'
+
+# row 4
+'([A-Z])\1([^A-K]|[A-K]){3}'
+'([^A-X]|[B-D])\1[LIEN]+'
+
+# row 5
+'([A-F]|[^A-F]|\sI)*'
+'[FIGURE\s]*'
+
+# row 6
+'([A-Z]|\sWE)\1\D[AOHJMN]+'
+'(?=.[A-Z])([^M-OT-Z])\1[LO0N\s]+'
+
+# row 7
+'(\s|\S)\S\D\D\1'
+'(\sH|HI|SI)[I-Z]*\b\s+'
+
+# row 8
+'.*[A-F]C[^L-P]+'
+'[^ABCD-G](..)K\s+?'
+
+# row 9
+'[A-Z]I[HTCAD]{2}\s'
+'([T-X][B-K]|\s){3}'
+
+# row 10
+'(A\s|\sA|A)[SCR]*'
+'[ACE\s]{2,3}[CR3AMER\S]{3,4}'
+
+# row 11
+'[AEIOU]{1,2}[^AEIOU][!4][\s]'
+'([.-\/!]|ME|EA|AM|[K-P])+[\s!]'
+
+# columns
+'([A-Z])I([N153!])\1[GL\s]+\2[WORD][^VOW3LS]+'
+'([A-M])NDB(\s|\S)\1[^QWERTY][AEI]*\2[A123]'
+'E[G0D\s]([G0D\s])[^A-KM-P]([AIE])\1\2[CTSM]+[ACD]*'
+'[A\sB]{2,3}(IFO|SKH)+.!'
+'(?:\D|\d)(\D)\1[N\s12!ER]+\1?'

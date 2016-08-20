@@ -1,3 +1,11 @@
+version 1.1.0 - 2016-05-10
+--------------------------
+* Added non-capturing group support - that is: '(?:'.
+* Added positive lookahead support - that is: '(?='.
+* Added several grids to directory 'grid_tests'. The added grids use
+  non-capturing groups and/or positive lookaheads.
+* Universal regexes (that is: '.*') are now optimized away.
+
 version 1.0.0 - 2016-05-02
 --------------------------
 Initial version.

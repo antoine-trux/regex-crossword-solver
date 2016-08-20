@@ -95,6 +95,15 @@ Regex::clone() const
 
 // accessing
 
+// Return the backreferences which are equal to 'regex' or descent from
+// 'regex', and which reference 'group_number'.
+vector<const BackreferenceRegex*>
+Regex::backreferences_to(const Regex&       regex,
+                         const GroupNumber& group_number)
+{
+    return regex.backreferences_to(group_number);
+}
+
 size_t
 Regex::begin_pos(const Regex& regex)
 {
@@ -151,6 +160,42 @@ Regex::constrain(const Constraint& constraint)
 
     assert(new_constraint.is_tighter_than_or_equal_to(constraint));
     return new_constraint;
+}
+
+bool
+Regex::constrain_as_positive_lookahead(Regex&      regex,
+                                       Constraint& constraint,
+                                       size_t      begin_pos)
+{
+    return regex.constrain_as_positive_lookahead(constraint, begin_pos);
+}
+
+bool
+Regex::constrain_as_positive_lookahead(Constraint& constraint, size_t begin_pos)
+{
+    auto new_constraint = Constraint::none(constraint.size());
+
+    rewind(begin_pos);
+
+    while (not_at_end())
+    {
+        if (value_fits())
+        {
+            auto constraint_copy = constraint;
+
+            if (constrain_with_current_value(constraint_copy))
+            {
+                new_constraint |= constraint_copy;
+            }
+        }
+
+        increment();
+    }
+
+    assert(new_constraint.is_tighter_than_or_equal_to(constraint));
+    constraint = new_constraint;
+
+    return constraint.is_possible();
 }
 
 bool
@@ -349,6 +394,23 @@ Regex::enclosing_group() const
     return m_parent->yourself_or_enclosing_group();
 }
 
+// Return the closest PositiveLookaheadRegex that encloses this regex,
+// 'or nullptr' if there is no such PositiveLookaheadRegex.
+//
+// For example:
+// * calling this method on sub-regex 'A' of '(?=A)B' returns '(?=A)'
+// * calling this method on sub-regex 'B' of '(?=A)B' returns 'nullptr'
+const PositiveLookaheadRegex*
+Regex::enclosing_lookahead() const
+{
+    if (!has_parent())
+    {
+        return nullptr;
+    }
+
+    return m_parent->yourself_or_enclosing_lookahead();
+}
+
 size_t
 Regex::end_pos(const Regex& regex)
 {
@@ -381,6 +443,13 @@ Regex::get_used_backreference_numbers(
          BackreferenceNumbers& used_backreference_numbers)
 {
     regex.do_get_used_backreference_numbers(used_backreference_numbers);
+}
+
+// Return the groups contained in 'regex'.
+vector<const GroupRegex*>
+Regex::groups(const Regex& regex)
+{
+    return regex.groups();
 }
 
 size_t
@@ -418,6 +487,7 @@ Regex::parse(const string& regex_as_string)
 {
     auto regex = RegexParser::parse(regex_as_string);
     regex->check_no_self_references();
+    regex->check_lookaheads_are_not_referenced_from_outside();
     assert(regex->parents_are_correctly_setup());
     return regex;
 }
@@ -543,6 +613,15 @@ const GroupRegex*
 Regex::yourself_or_enclosing_group() const
 {
     return enclosing_group();
+}
+
+// If this regex is a lookahead regex, return it. Otherwise, return the
+// lookahead regex that encloses this regex, or 'nullptr' if there is no
+// such lookahead regex.
+const PositiveLookaheadRegex*
+Regex::yourself_or_enclosing_lookahead() const
+{
+    return enclosing_lookahead();
 }
 
 // querying
@@ -672,6 +751,25 @@ bool
 Regex::has_a_value_which_fits() const
 {
     return has_a_value() && value_fits();
+}
+
+// Return whether 'regex' is an ancestor of this regex.
+bool
+Regex::has_ancestor(const Regex* regex) const
+{
+    if (!has_parent())
+    {
+        return false;
+    }
+
+    if (m_parent == regex)
+    {
+        return true;
+    }
+    else
+    {
+        return m_parent->has_ancestor(regex);
+    }
 }
 
 bool
@@ -1045,6 +1143,56 @@ Regex::set_parent(Regex* parent)
 
 // error handling
 
+// Check that the lookaheads of this regex, if any, do not contain
+// groups which are backreferenced from outside the lookahead.
+//
+// For example:
+// * '(?=A(B))' passes the check, because its only group ('(B)') is not
+//   backreferenced
+// * '(?=A(B)\1)' passes the check, because its only group ('(B)') is
+//   referenced only from within the lookahead which contains that group
+// * '(?=A(B)\1)\1' does not pass the check, because it contains a group
+//   ('(B)') which is referenced from outside the lookahead which
+//   contains that group (namely, by the second instance of '\1')
+void
+Regex::check_lookaheads_are_not_referenced_from_outside() const
+{
+    for (auto group : groups())
+    {
+        const auto lookahead = group->enclosing_lookahead();
+
+        if (lookahead == nullptr)
+        {
+            // 'group' is not within a lookahead, so 'group' is fine as
+            // far as this check is concerned.
+            continue;
+        }
+
+        for (auto backreference : backreferences_to(group->number()))
+        {
+            if (backreference->has_ancestor(lookahead))
+            {
+                // Both 'backreference' and 'group' are within the same
+                // lookahead, so 'backreference' is fine as far as this
+                // check is concerned.
+                continue;
+            }
+
+            // 'backreference' it outside the lookahead to which
+            // 'group' belongs.
+            const string message =
+                "in "                                 +
+                Utils::quoted(to_string())            +
+                ",\nlookahead "                       +
+                Utils::quoted(lookahead->to_string()) +
+                " contains a group ("                 +
+                Utils::quoted(group->to_string())     +
+                ")\nwhich is referenced outside the lookahead";
+            throw RegexStructureException(message);
+        }
+    }
+}
+
 void
 Regex::check_no_self_references(const Regex& regex)
 {
@@ -1069,6 +1217,12 @@ NullaryRegex::NullaryRegex() :
 }
 
 // accessing
+
+vector<const BackreferenceRegex*>
+NullaryRegex::backreferences_to(const GroupNumber& /*group_number*/) const
+{
+    return {};
+}
 
 // See Regex::constrain_once_with_current_value().
 bool
@@ -1122,6 +1276,12 @@ GroupRegex*
 NullaryRegex::do_rightmost_group(const GroupNumber& /*group_number*/)
 {
     return nullptr;
+}
+
+vector<const GroupRegex*>
+NullaryRegex::groups() const
+{
+    return {};
 }
 
 // querying
@@ -1547,6 +1707,126 @@ string
 EpsilonNotAtWordBoundaryRegex::do_to_string() const
 {
     return "\\B";
+}
+
+
+// PositiveLookaheadRegex
+// ----------------------
+
+// instance creation and deletion
+
+PositiveLookaheadRegex::PositiveLookaheadRegex(unique_ptr<Regex> regex) :
+  m_regex(move(regex))
+{
+    set_parent(*m_regex, this);
+    assert(class_invariant());
+}
+
+// copying
+
+unique_ptr<Regex>
+PositiveLookaheadRegex::do_clone() const
+{
+    return Utils::make_unique<PositiveLookaheadRegex>(m_regex->clone());
+}
+
+// accessing
+
+vector<const BackreferenceRegex*>
+PositiveLookaheadRegex::backreferences_to(const GroupNumber& group_number) const
+{
+    return Regex::backreferences_to(*m_regex, group_number);
+}
+
+// See Regex::constrain_word_boundaries_with_current_value().
+bool
+PositiveLookaheadRegex::do_constrain_once_with_current_value(
+                          Constraint& constraint, size_t offset)
+{
+    const auto constraint_comes_from_backreference = (offset != 0);
+    if (constraint_comes_from_backreference)
+    {
+        // This method is called as the result of a backreference
+        // constraining a group which is an ancestor of this lookahead.
+        // In such a context, this lookahead is to be treated as an
+        // epsilon (i.e., a string of zero-length), which constrains
+        // nothing.
+        return true;
+    }
+
+    assert(offset == 0);
+    return constrain_as_positive_lookahead(*m_regex, constraint, begin_pos());
+}
+
+string
+PositiveLookaheadRegex::do_explicit_characters() const
+{
+    return m_regex->explicit_characters();
+}
+
+void
+PositiveLookaheadRegex::do_get_used_backreference_numbers(
+    BackreferenceNumbers& used_backreference_numbers) const
+{
+    get_used_backreference_numbers(*m_regex, used_backreference_numbers);
+}
+
+vector<const GroupRegex*>
+PositiveLookaheadRegex::groups() const
+{
+    return Regex::groups(*m_regex);
+}
+
+const PositiveLookaheadRegex*
+PositiveLookaheadRegex::yourself_or_enclosing_lookahead() const
+{
+    return this;
+}
+
+// converting
+
+string
+PositiveLookaheadRegex::do_to_string() const
+{
+    return "(?=" + m_regex->to_string() + ')';
+}
+
+// modifying
+
+Regex*
+PositiveLookaheadRegex::do_optimize_concatenations()
+{
+    m_regex = optimize_concatenations(move(m_regex));
+    return this;
+}
+
+Regex*
+PositiveLookaheadRegex::do_optimize_groups(
+    const BackreferenceNumbers& used_backreference_numbers)
+{
+    m_regex = optimize_groups(move(m_regex), used_backreference_numbers);
+    return this;
+}
+
+Regex*
+PositiveLookaheadRegex::do_optimize_unions()
+{
+    m_regex = optimize_unions(move(m_regex));
+    return this;
+}
+
+void
+PositiveLookaheadRegex::set_constraint_size_of_children(size_t constraint_size)
+{
+    set_constraint_size(*m_regex, constraint_size);
+}
+
+// error handling
+
+void
+PositiveLookaheadRegex::do_check_no_self_references() const
+{
+    check_no_self_references(*m_regex);
 }
 
 
@@ -2001,6 +2281,19 @@ BackreferenceRegex::do_clone() const
 
 // accessing
 
+vector<const BackreferenceRegex*>
+BackreferenceRegex::backreferences_to(const GroupNumber& group_number) const
+{
+    if (group_number == m_referenced_group_number)
+    {
+        return { this };
+    }
+    else
+    {
+        return {};
+    }
+}
+
 // See Regex::constrain_once_with_current_value().
 bool
 BackreferenceRegex::do_constrain_once_with_current_value(
@@ -2093,70 +2386,70 @@ BackreferenceRegex::do_check_no_self_references() const
 }
 
 
-// GroupRegex
-// ----------
+// AbstractGroupRegex
+// ------------------
 
 // instance creation and deletion
 
-GroupRegex::GroupRegex(unique_ptr<Regex>  child,
-                       const GroupNumber& group_number) :
-  m_child(move(child)),
-  m_group_number(group_number)
+AbstractGroupRegex::AbstractGroupRegex(unique_ptr<Regex> child) :
+  m_child(move(child))
 {
     set_parent(*m_child, this);
-
-    assert(class_invariant());
-}
-
-// copying
-
-unique_ptr<Regex>
-GroupRegex::do_clone() const
-{
-    return Utils::make_unique<GroupRegex>(m_child->clone(), m_group_number);
 }
 
 // accessing
 
+vector<const BackreferenceRegex*>
+AbstractGroupRegex::backreferences_to(const GroupNumber& group_number) const
+{
+    return Regex::backreferences_to(*m_child, group_number);
+}
+
+Regex&
+AbstractGroupRegex::child() const
+{
+    return *m_child;
+}
+
 // See Regex::constrain_once_with_current_value().
 bool
-GroupRegex::do_constrain_once_with_current_value(Constraint& constraint,
-                                                 size_t      offset)
+AbstractGroupRegex::do_constrain_once_with_current_value(Constraint& constraint,
+                                                         size_t      offset)
 {
     return constrain_once_with_current_value(*m_child, constraint, offset);
 }
 
 // See Regex::constrain_word_boundaries_with_current_value().
 bool
-GroupRegex::do_constrain_word_boundaries_with_current_value(
-              Constraint& constraint)
+AbstractGroupRegex::do_constrain_word_boundaries_with_current_value(
+                      Constraint& constraint)
 {
     return constrain_word_boundaries_with_current_value(*m_child, constraint);
 }
 
 string
-GroupRegex::do_explicit_characters() const
+AbstractGroupRegex::do_explicit_characters() const
 {
     return m_child->explicit_characters();
 }
 
 void
-GroupRegex::do_get_used_backreference_numbers(
-              BackreferenceNumbers& used_backreference_numbers) const
+AbstractGroupRegex::do_get_used_backreference_numbers(
+                      BackreferenceNumbers& used_backreference_numbers) const
 {
     get_used_backreference_numbers(*m_child, used_backreference_numbers);
 }
 
 size_t
-GroupRegex::do_length_of_current_value() const
+AbstractGroupRegex::do_length_of_current_value() const
 {
     return length_of_current_value(*m_child);
 }
 
 // See Regex::rightmost_group(Regex&, const GroupNumber&, const Regex*).
 GroupRegex*
-GroupRegex::do_rightmost_group(const GroupNumber& group_number,
-                               const Regex*       from_child)
+AbstractGroupRegex::do_rightmost_group(const GroupNumber& group_number,
+                                       const Regex*       from_child)
 {
     assert(from_child == m_child.get());
 
@@ -2164,40 +2457,22 @@ GroupRegex::do_rightmost_group(const GroupNumber& group_number,
     return rightmost_group_from_parent(group_number);
 }
 
-// See Regex::rightmost_group(Regex&, const GroupNumber&).
-GroupRegex*
-GroupRegex::do_rightmost_group(const GroupNumber& group_number)
-{
-    if (group_number == m_group_number)
-    {
-        return this;
-    }
-
-    return rightmost_group(*m_child, group_number);
-}
-
-const GroupRegex*
-GroupRegex::yourself_or_enclosing_group() const
-{
-    return this;
-}
-
 // querying
 
 bool
-GroupRegex::do_at_end() const
+AbstractGroupRegex::do_at_end() const
 {
     return at_end(*m_child);
 }
 
 bool
-GroupRegex::do_characters_were_constrained_by_backreference() const
+AbstractGroupRegex::do_characters_were_constrained_by_backreference() const
 {
     return characters_were_constrained_by_backreference(*m_child);
 }
 
 bool
-GroupRegex::do_parents_are_correctly_setup() const
+AbstractGroupRegex::do_parents_are_correctly_setup() const
 {
     if (parent(*m_child) != this)
     {
@@ -2207,42 +2482,28 @@ GroupRegex::do_parents_are_correctly_setup() const
     return parents_are_correctly_setup(*m_child);
 }
 
-bool
-GroupRegex::has_number(const GroupNumber& group_number) const
-{
-    return m_group_number == group_number;
-}
-
-// converting
-
-string
-GroupRegex::do_to_string() const
-{
-    return '(' + m_child->to_string() + ')';
-}
-
 // modifying
 
 void
-GroupRegex::do_increment()
+AbstractGroupRegex::do_increment()
 {
     increment(*m_child);
 }
 
 Regex*
-GroupRegex::do_optimize_concatenations()
+AbstractGroupRegex::do_optimize_concatenations()
 {
     m_child = optimize_concatenations(move(m_child));
     return this;
 }
 
 Regex*
-GroupRegex::do_optimize_groups(
-              const BackreferenceNumbers& used_backreference_numbers)
+AbstractGroupRegex::do_optimize_groups(
+                      const BackreferenceNumbers& used_backreference_numbers)
 {
     m_child = optimize_groups(move(m_child), used_backreference_numbers);
 
-    if (used_backreference_numbers.contains(m_group_number))
+    if (number_belongs_to(used_backreference_numbers))
     {
         // This group cannot be optimized away, because it is
         // backreferenced.
@@ -2255,32 +2516,32 @@ GroupRegex::do_optimize_groups(
 }
 
 Regex*
-GroupRegex::do_optimize_unions()
+AbstractGroupRegex::do_optimize_unions()
 {
     m_child = optimize_unions(move(m_child));
     return this;
 }
 
 void
-GroupRegex::do_reset_after_constrain()
+AbstractGroupRegex::do_reset_after_constrain()
 {
     reset_after_constrain(*m_child);
 }
 
 void
-GroupRegex::do_reset_characters_were_constrained_by_backreference()
+AbstractGroupRegex::do_reset_characters_were_constrained_by_backreference()
 {
     reset_characters_were_constrained_by_backreference(*m_child);
 }
 
 void
-GroupRegex::do_rewind()
+AbstractGroupRegex::do_rewind()
 {
     rewind(*m_child, begin_pos());
 }
 
 void
-GroupRegex::set_constraint_size_of_children(size_t constraint_size)
+AbstractGroupRegex::set_constraint_size_of_children(size_t constraint_size)
 {
     set_constraint_size(*m_child, constraint_size);
 }
@@ -2288,9 +2549,142 @@ GroupRegex::set_constraint_size_of_children(size_t constraint_size)
 // error handling
 
 void
-GroupRegex::do_check_no_self_references() const
+AbstractGroupRegex::do_check_no_self_references() const
 {
     check_no_self_references(*m_child);
+}
+
+
+// GroupRegex
+// ----------
+
+// instance creation and deletion
+
+GroupRegex::GroupRegex(unique_ptr<Regex>  child,
+                       const GroupNumber& group_number) :
+  AbstractGroupRegex(move(child)),
+  m_group_number(group_number)
+{
+    assert(class_invariant());
+}
+
+// copying
+
+unique_ptr<Regex>
+GroupRegex::do_clone() const
+{
+    return Utils::make_unique<GroupRegex>(child().clone(), m_group_number);
+}
+
+// accessing
+
+// See Regex::rightmost_group(Regex&, const GroupNumber&).
+GroupRegex*
+GroupRegex::do_rightmost_group(const GroupNumber& group_number)
+{
+    if (group_number == m_group_number)
+    {
+        return this;
+    }
+
+    return rightmost_group(child(), group_number);
+}
+
+vector<const GroupRegex*>
+GroupRegex::groups() const
+{
+    auto result = Regex::groups(child());
+    result.push_back(this);
+    return result;
+}
+
+GroupNumber
+GroupRegex::number() const
+{
+    return m_group_number;
+}
+
+const GroupRegex*
+GroupRegex::yourself_or_enclosing_group() const
+{
+    return this;
+}
+
+// querying
+
+bool
+GroupRegex::has_number(const GroupNumber& group_number) const
+{
+    return m_group_number == group_number;
+}
+
+bool
+GroupRegex::number_belongs_to(
+              const BackreferenceNumbers& backreference_numbers) const
+{
+    return backreference_numbers.contains(m_group_number);
+}
+
+// converting
+
+string
+GroupRegex::do_to_string() const
+{
+    return '(' + child().to_string() + ')';
+}
+
+
+// NonCapturingGroupRegex
+// ----------------------
+
+// instance creation and deletion
+
+NonCapturingGroupRegex::NonCapturingGroupRegex(unique_ptr<Regex> child) :
+  AbstractGroupRegex(move(child))
+{
+    assert(class_invariant());
+}
+
+// copying
+
+unique_ptr<Regex>
+NonCapturingGroupRegex::do_clone() const
+{
+    return Utils::make_unique<NonCapturingGroupRegex>(child().clone());
+}
+
+// accessing
+
+// See Regex::rightmost_group(Regex&, const GroupNumber&).
+GroupRegex*
+NonCapturingGroupRegex::do_rightmost_group(const GroupNumber& group_number)
+{
+    return rightmost_group(child(), group_number);
+}
+
+vector<const GroupRegex*>
+NonCapturingGroupRegex::groups() const
+{
+    return Regex::groups(child());
+}
+
+// querying
+
+bool
+NonCapturingGroupRegex::number_belongs_to(
+    const BackreferenceNumbers& /*backreference_numbers*/) const
+{
+    // A NonCapturingGroupRegex has no number, so we unconditionally
+    // return false;
+    return false;
+}
+
+// converting
+
+string
+NonCapturingGroupRegex::do_to_string() const
+{
+    return "(?:" + child().to_string() + ')';
 }
 
 
@@ -2310,6 +2704,18 @@ BinaryRegex::BinaryRegex(unique_ptr<Regex> left_child,
 
 // accessing
 
+vector<const BackreferenceRegex*>
+BinaryRegex::backreferences_to(const GroupNumber& group_number) const
+{
+    auto result = Regex::backreferences_to(*m_left_child, group_number);
+    auto right_backreferences =
+             Regex::backreferences_to(*m_right_child, group_number);
+    result.insert(end(result),
+                  begin(right_backreferences),
+                  end(right_backreferences));
+    return result;
+}
+
 string
 BinaryRegex::do_explicit_characters() const
 {
@@ -2323,6 +2729,15 @@ BinaryRegex::do_get_used_backreference_numbers(
 {
     get_used_backreference_numbers(*m_left_child, used_backreference_numbers);
     get_used_backreference_numbers(*m_right_child, used_backreference_numbers);
+}
+
+vector<const GroupRegex*>
+BinaryRegex::groups() const
+{
+    auto result = Regex::groups(*m_left_child);
+    auto right_groups = Regex::groups(*m_right_child);
+    result.insert(end(result), begin(right_groups), end(right_groups));
+    return result;
 }
 
 Regex&
@@ -3516,6 +3931,12 @@ RepetitionRegex::rebuild_after_optimization()
 
 // accessing
 
+vector<const BackreferenceRegex*>
+RepetitionRegex::backreferences_to(const GroupNumber& group_number) const
+{
+    return Regex::backreferences_to(*m_child_to_repeat, group_number);
+}
+
 Regex&
 RepetitionRegex::child_to_repeat() const
 {
@@ -3635,6 +4056,12 @@ RepetitionRegex::do_rightmost_group(const GroupNumber& group_number)
     }
 
     return nullptr;
+}
+
+vector<const GroupRegex*>
+RepetitionRegex::groups() const
+{
+    return Regex::groups(*m_child_to_repeat);
 }
 
 // Precondition:

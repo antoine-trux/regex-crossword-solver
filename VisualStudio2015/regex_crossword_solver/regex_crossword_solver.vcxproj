@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\source\solver\grid.cpp" />
     <ClCompile Include="..\..\source\solver\grid_cell.cpp" />
     <ClCompile Include="..\..\source\solver\grid_line.cpp" />
+    <ClCompile Include="..\..\source\solver\grid_line_regex.cpp" />
     <ClCompile Include="..\..\source\solver\grid_printer.cpp" />
     <ClCompile Include="..\..\source\solver\grid_reader.cpp" />
     <ClCompile Include="..\..\source\solver\group_number.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="..\..\source\solver\grid.hpp" />
     <ClInclude Include="..\..\source\solver\grid_cell.hpp" />
     <ClInclude Include="..\..\source\solver\grid_line.hpp" />
+    <ClInclude Include="..\..\source\solver\grid_line_regex.hpp" />
     <ClInclude Include="..\..\source\solver\grid_printer.hpp" />
     <ClInclude Include="..\..\source\solver\grid_reader.hpp" />
     <ClInclude Include="..\..\source\solver\group_number.hpp" />

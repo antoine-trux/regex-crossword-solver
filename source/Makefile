@@ -266,6 +266,7 @@ SOLVER_SOURCES_NOT_MAIN += constraint.cpp
 SOLVER_SOURCES_NOT_MAIN += grid.cpp
 SOLVER_SOURCES_NOT_MAIN += grid_cell.cpp
 SOLVER_SOURCES_NOT_MAIN += grid_line.cpp
+SOLVER_SOURCES_NOT_MAIN += grid_line_regex.cpp
 SOLVER_SOURCES_NOT_MAIN += grid_printer.cpp
 SOLVER_SOURCES_NOT_MAIN += grid_reader.cpp
 SOLVER_SOURCES_NOT_MAIN += group_number.cpp

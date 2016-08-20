@@ -210,6 +210,42 @@ TEST_F(CommandLineTest, log)
 
 #endif // ENABLE_LOGGING
 
+TEST_F(CommandLineTest, no_concat_optim)
+{
+    const char* const argv[] =
+        { "program", "--no-concat-optim", "input_file", nullptr };
+    const int argc = Utils::array_size(argv) - 1;
+    CommandLine::parse(argc, argv);
+    const auto optimizations = CommandLine::regex_optimizations();
+    EXPECT_FALSE(optimizations.optimize_concatenations());
+    EXPECT_TRUE(optimizations.optimize_groups());
+    EXPECT_TRUE(optimizations.optimize_unions());
+}
+
+TEST_F(CommandLineTest, no_group_optim)
+{
+    const char* const argv[] =
+        { "program", "--no-group-optim", "input_file", nullptr };
+    const int argc = Utils::array_size(argv) - 1;
+    CommandLine::parse(argc, argv);
+    const auto optimizations = CommandLine::regex_optimizations();
+    EXPECT_TRUE(optimizations.optimize_concatenations());
+    EXPECT_FALSE(optimizations.optimize_groups());
+    EXPECT_TRUE(optimizations.optimize_unions());
+}
+
+TEST_F(CommandLineTest, no_union_optim)
+{
+    const char* const argv[] =
+        { "program", "--no-union-optim", "input_file", nullptr };
+    const int argc = Utils::array_size(argv) - 1;
+    CommandLine::parse(argc, argv);
+    const auto optimizations = CommandLine::regex_optimizations();
+    EXPECT_TRUE(optimizations.optimize_concatenations());
+    EXPECT_TRUE(optimizations.optimize_groups());
+    EXPECT_FALSE(optimizations.optimize_unions());
+}
+
 TEST_F(CommandLineTest, no_optim)
 {
     const char* const argv[] =
@@ -267,4 +303,11 @@ TEST_F(CommandLineTest, print_usage)
     // The output is not checked.
     ostringstream oss;
     CommandLine::print_usage(oss);
+}
+
+TEST_F(CommandLineTest, print_version)
+{
+    // The output is not checked.
+    ostringstream oss;
+    CommandLine::print_version(oss);
 }

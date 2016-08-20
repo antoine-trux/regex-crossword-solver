@@ -111,6 +111,27 @@ RegexTokenizer::has_pushed_back_tokens() const
     return !m_pushed_back_tokens.empty();
 }
 
+// Return whether the next characters match the ones in 's', in the
+// same order.
+bool
+RegexTokenizer::next_chars_are(const string& s) const
+{
+    if (num_remaining_chars() < s.size())
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i != s.size(); ++i)
+    {
+        if (peek_char(i) != s[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool
 RegexTokenizer::next_three_chars_are_octal_digits() const
 {
@@ -499,12 +520,12 @@ RegexTokenizer::consume_escape_unicode_token(size_t expected_num_hex_digits)
 
     if (num_hex_digits_read == expected_num_hex_digits)
     {
-        const auto error_message = "unicode characters are not supported";
+        const auto error_message = "Unicode characters are not supported";
         return RegexToken::create_invalid_token(error_message);
     }
     else
     {
-        const auto error_message = "incomplete unicode escape";
+        const auto error_message = "incomplete Unicode escape";
         return RegexToken::create_invalid_token(error_message);
     }
 }
@@ -640,10 +661,8 @@ RegexTokenizer::consume_token_in_character_class()
         }
 
     case '\\':
-    {
         push_back_char(next_char);
         return consume_escape_token();
-    }
 
     default:
         return RegexToken::create_single_character_token(next_char);
@@ -722,9 +741,19 @@ RegexTokenizer::consume_token_outside_character_class()
         return RegexToken::create_token(RTT::OR);
 
     case '(':
-        if (not_at_end_of_string() && peek_char() == '?')
+        if (next_chars_are("?="))
         {
-            const auto error_message = "construct '(?' is not supported";
+            skip_chars(2);
+            return RegexToken::create_token(RTT::OPEN_POSITIVE_LOOKAHEAD);
+        }
+        else if (next_chars_are("?:"))
+        {
+            skip_chars(2);
+            return RegexToken::create_token(RTT::OPEN_NON_CAPTURING_GROUP);
+        }
+        else if (not_at_end_of_string() && peek_char() == '?')
+        {
+            const auto error_message = "unsupported '(?' construct";
             return RegexToken::create_invalid_token(error_message);
         }
         else
@@ -773,4 +802,11 @@ RegexTokenizer::push_back_tokens(const vector<RegexToken>& tokens)
     {
         push_back_token(*rit);
     }
+}
+
+void
+RegexTokenizer::skip_chars(size_t num_chars)
+{
+    assert(num_remaining_chars() >= num_chars);
+    m_next_char_index += num_chars;
 }

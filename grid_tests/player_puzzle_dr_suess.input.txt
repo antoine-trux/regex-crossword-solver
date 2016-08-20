@@ -1,0 +1,38 @@
+# https://regexcrossword.com/playerpuzzles
+
+shape = rectangular
+
+num_rows = 7
+num_cols = 5
+
+num_regexes_per_row = 1
+num_regexes_per_col = 2
+
+# rows
+'.[^DR]*[SUESS].*F'
+'(Cat|I[^n]).T[^HE]'
+'O[^\S]F[H-J]S'
+'([HELLO])[\sREAD]{2,}'
+'([^\S])\1?[^horton].{3}'
+'\s[A-J][LORA-X]{3}'
+'_?\S?\s[GREE-N].[SSG][AND]*[HAM]'
+
+# column 1
+'[AEIOU]+(.|\s)+'
+'0*(O).\1H.{3}'
+
+# column 2
+'[NR](.F|S\s)+([FOUR])*BF'
+'NS\s+(F)[A-C]\1'
+
+# column 3
+'E\sFRILI'
+'(E)J*W*\s+(UJ|FR|LW)(.)L\3'
+
+# column 4
+'[^\S](?:[BENITO]*)(\S)U\1'
+'.T.[SUESS]+'
+
+# column 5
+'(?:F)*W[DSWJ]+(H)E\1'
+'(\SD|FW){2}([A-J])E\2'
