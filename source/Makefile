@@ -44,7 +44,11 @@ else
 ifeq ($(findstring CYGWIN,$(shell uname)),CYGWIN)
     OS=cygwin
 else
+ifeq ($(findstring Darwin,$(shell uname)),Darwin)
+    OS=darwin
+else
     $(error unsupported environment)
+endif
 endif
 endif
 
@@ -146,6 +150,10 @@ ifeq ($(call is_build,release),T)
 ifeq ($(call is_gcc),T)
 ifeq ($(OS),linux)
     USE_LTO = T
+else
+ifeq ($(OS),darwin)
+    USE_LTO = T
+endif
 endif
 endif
 endif
@@ -401,7 +409,9 @@ CXXFLAGS += -std=c++11
 CXXFLAGS += -ffor-scope
 CXXFLAGS += -Wctor-dtor-privacy
 CXXFLAGS += -Wnon-virtual-dtor
-ifeq ($(call is_gcc),T)
+ifeq ($(OS),darwin)
+    # Don't add flags
+else ifeq ($(call is_gcc),T)
     CXXFLAGS += -fno-nonansi-builtins
     CXXFLAGS += -Wnoexcept
     CXXFLAGS += -Wstrict-null-sentinel
@@ -436,7 +446,11 @@ CXXFLAGS += -Wvariadic-macros
 CXXFLAGS += -Wvla
 CXXFLAGS += -Wdisabled-optimization
 CXXFLAGS += -Woverlength-strings
-ifeq ($(call is_gcc),T)
+ifeq ($(OS),darwin)
+    CXXFLAGS += -Wdouble-promotion
+    CXXFLAGS += -Wunused-local-typedefs
+    CXXFLAGS += -Wno-sign-conversion
+else ifeq ($(call is_gcc),T)
     CXXFLAGS += -Wdouble-promotion
     CXXFLAGS += -Wsync-nand
     CXXFLAGS += -Wunused-local-typedefs
@@ -500,7 +514,9 @@ CXXFLAGS_GTEST += -Wno-conversion
 CXXFLAGS_GTEST += -Wno-sign-conversion
 CXXFLAGS_GTEST += -Wno-missing-declarations
 CXXFLAGS_GTEST += -Wno-missing-field-initializers
-ifeq ($(call is_gcc),T)
+ifeq ($(OS),darwin)
+    # Don't add flags
+else ifeq ($(call is_gcc),T)
     CXXFLAGS_GTEST += -Wno-zero-as-null-pointer-constant
 endif
 
@@ -564,7 +580,11 @@ $(BUILD_DIR):
 
 # linker flags
 
-LDFLAGS += -Wl,--fatal-warnings
+ifeq ($(OS),darwin)
+    LDFLAGS += -Wl
+else
+    LDFLAGS += -Wl,--fatal-warnings
+endif
 
 ifeq ($(call is_build,coverage,debug,profile),T)
     LDFLAGS += -g
