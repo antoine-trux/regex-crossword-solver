@@ -35,8 +35,9 @@ and some of the ones available at https://regexcrossword.com.
 
 02. Where to get it?
 --------------------
-Regex Crossword Solver is available at
-http://solving-regular-expression-crosswords.blogspot.com.
+Regex Crossword Solver is available at:
+* http://solving-regular-expression-crosswords.blogspot.com (blog)
+* https://github.com/antoine-trux/regex-crossword-solver (code)
 
 
 03. Requirements
